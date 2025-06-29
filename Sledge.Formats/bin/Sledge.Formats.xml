@@ -1,0 +1,1420 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Sledge.Formats</name>
+    </assembly>
+    <members>
+        <member name="T:Sledge.Formats.BinaryExtensions">
+            <summary>
+            Common binary reader/write extension methods
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadFixedLengthString(System.IO.BinaryReader,System.Text.Encoding,System.Int32)">
+            <summary>
+            Read a fixed number of bytes from the reader and parse out an optionally null-terminated string
+            </summary>
+            <param name="br">Binary reader</param>
+            <param name="encoding">The text encoding to use</param>
+            <param name="length">The number of bytes to read</param>
+            <returns>The string that was read</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.WriteFixedLengthString(System.IO.BinaryWriter,System.Text.Encoding,System.Int32,System.String)">
+            <summary>
+            Write a string to the writer and pad the width with nulls to reach a fixed number of bytes.
+            </summary>
+            <param name="bw">Binary writer</param>
+            <param name="encoding">The text encoding to use</param>
+            <param name="length">The number of bytes to write</param>
+            <param name="str">The string to write</param>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadNullTerminatedString(System.IO.BinaryReader)">
+            <summary>
+            Read a variable number of bytes into a string until a null terminator is reached.
+            </summary>
+            <param name="br">Binary reader</param>
+            <returns>The string that was read</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.WriteNullTerminatedString(System.IO.BinaryWriter,System.String)">
+            <summary>
+            Write a string followed by a null terminator.
+            </summary>
+            <param name="bw">Binary writer</param>
+            <param name="str">The string to write</param>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadCString(System.IO.BinaryReader)">
+            <summary>
+            Read a length-prefixed string from the reader.
+            </summary>
+            <param name="br">Binary reader</param>
+            <returns>String that was read</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.WriteCString(System.IO.BinaryWriter,System.String,System.Int32)">
+            <summary>
+            Write a length-prefixed string to the writer.
+            </summary>
+            <param name="bw">Binary writer</param>
+            <param name="str">The string to write</param>
+            <param name="maximumLength">The maximum length of the string</param>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadUshortArray(System.IO.BinaryReader,System.Int32)">
+            <summary>
+            Read an array of short unsigned integers
+            </summary>
+            <param name="br">Binary reader</param>
+            <param name="num">The number of values to read</param>
+            <returns>The resulting array</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadShortArray(System.IO.BinaryReader,System.Int32)">
+            <summary>
+            Read an array of short integers
+            </summary>
+            <param name="br">Binary reader</param>
+            <param name="num">The number of values to read</param>
+            <returns>The resulting array</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadIntArray(System.IO.BinaryReader,System.Int32)">
+            <summary>
+            Read an array of integers
+            </summary>
+            <param name="br">Binary reader</param>
+            <param name="num">The number of values to read</param>
+            <returns>The resulting array</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadSingleArrayAsDecimal(System.IO.BinaryReader,System.Int32)">
+            <summary>
+            Read an array of floats and cast them to decimals
+            </summary>
+            <param name="br">Binary reader</param>
+            <param name="num">The number of values to read</param>
+            <returns>The resulting array</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadSingleArray(System.IO.BinaryReader,System.Int32)">
+            <summary>
+            Read an array of floats
+            </summary>
+            <param name="br">Binary reader</param>
+            <param name="num">The number of values to read</param>
+            <returns>The resulting array</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadSingleAsDecimal(System.IO.BinaryReader)">
+            <summary>
+            Read a float and cast it to decimal
+            </summary>
+            <param name="br">Binary reader</param>
+            <returns>Value that was read</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.WriteDecimalAsSingle(System.IO.BinaryWriter,System.Decimal)">
+            <summary>
+            Write a decimal as a float
+            </summary>
+            <param name="bw">Binary writer</param>
+            <param name="dec">Value to write</param>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadRGBColour(System.IO.BinaryReader)">
+            <summary>
+            Read an RGB colour as 3 bytes
+            </summary>
+            <param name="br">Binary reader</param>
+            <returns>The colour which was read</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.WriteRGBColour(System.IO.BinaryWriter,System.Drawing.Color)">
+            <summary>
+            Write an RGB colour as 3 bytes
+            </summary>
+            <param name="bw">Binary writer</param>
+            <param name="c">The colour to write</param>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.ReadRGBAColour(System.IO.BinaryReader)">
+            <summary>
+            Read an RGBA colour as 4 bytes
+            </summary>
+            <param name="br">Binary reader</param>
+            <returns>The colour which was read</returns>
+        </member>
+        <member name="M:Sledge.Formats.BinaryExtensions.WriteRGBAColour(System.IO.BinaryWriter,System.Drawing.Color)">
+            <summary>
+            Write an RGBA colour as 4 bytes
+            </summary>
+            <param name="bw">Binary writer</param>
+            <param name="c">The colour to write</param>
+        </member>
+        <member name="T:Sledge.Formats.ColorUtils">
+            <summary>
+            Utility methods for colours.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetRandomColour">
+            <summary>
+            Get a completely random opaque colour
+            </summary>
+            <returns>A random colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetRandomBrushColour">
+            <summary>
+            Get a random brush colour. Brush colours only vary from shades of green and blue.
+            </summary>
+            <returns>A random brush colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetRandomGroupColour">
+            <summary>
+            Get a random group colour. Group colours only vary from shades of green and red
+            </summary>
+            <returns>A random group colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetRandomLightColour">
+            <summary>
+            Get a random light colour
+            </summary>
+            <returns>A random light colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetRandomDarkColour">
+            <summary>
+            Get a random dark colour
+            </summary>
+            <returns>A random dark colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetDefaultEntityColour">
+            <summary>
+            Get the default entity colour (magenta)
+            </summary>
+            <returns>The default entity colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.Vary(System.Drawing.Color,System.Int32)">
+            <summary>
+            Randomly change this colour by a small amount
+            </summary>
+            <param name="color">The colour</param>
+            <param name="by">The maximum amount to vary by</param>
+            <returns>A (probably) slightly different colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.Darken(System.Drawing.Color,System.Int32)">
+            <summary>
+            Make a colour darker
+            </summary>
+            <param name="color">The colour</param>
+            <param name="by">The amount to darken by</param>
+            <returns>A darker colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.Lighten(System.Drawing.Color,System.Int32)">
+            <summary>
+            Make a colour lighter
+            </summary>
+            <param name="color">The colour</param>
+            <param name="by">The amount to lighten by</param>
+            <returns>A lighter colour</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.Blend(System.Drawing.Color,System.Drawing.Color)">
+            <summary>
+            Blend two colours
+            </summary>
+            <param name="color">The first colour</param>
+            <param name="other">The second colour</param>
+            <returns>A blend of the two colours</returns>
+        </member>
+        <member name="M:Sledge.Formats.ColorUtils.GetIdealForegroundColour(System.Drawing.Color)">
+            <summary>
+            Get an ideal foreground colour (white or black) if this colour was the background
+            </summary>
+            <param name="color">The background colour</param>
+            <returns>White for dark backgrounds, black for light backgrounds</returns>
+        </member>
+        <member name="T:Sledge.Formats.FileSystem.CompositeFileResolver">
+            <summary>
+            A file resolver made of multiple filesystem abstractions
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.CompositeFileResolver.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.FileSystem.IFileResolver})">
+            <summary>
+            Create a composite file resolver. Resolvers earlier in the list are given precedence.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.CompositeFileResolver.#ctor(Sledge.Formats.FileSystem.IFileResolver[])">
+            <summary>
+            Create a composite file resolver. Resolvers earlier in the list are given precedence.
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.FileSystem.IFileResolver">
+            <summary>
+            Abstraction for a file system
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.IFileResolver.FolderExists(System.String)">
+            <summary>
+            Check if a folder exists or not
+            </summary>
+            <param name="path">An absolute path of a folder to check existance of</param>
+            <returns>True if the folder exists</returns>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.IFileResolver.FileExists(System.String)">
+            <summary>
+            Check if a file exists or not
+            </summary>
+            <param name="path">An absolute path of a file to check existance of</param>
+            <returns>True if the file exists</returns>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.IFileResolver.FileSize(System.String)">
+            <summary>
+            Get the size, in bytes, of a file
+            </summary>
+            <param name="path">An absolute path of a file to get the size of</param>
+            <returns>The size of the file in bytes</returns>
+            <exception cref="T:System.IO.FileNotFoundException">If the file doesn't exist</exception>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.IFileResolver.OpenFile(System.String)">
+            <summary>
+            Open a read-only stream to a file
+            </summary>
+            <param name="path">An absolute path of a file to open</param>
+            <returns>A stream</returns>
+            <exception cref="T:System.IO.FileNotFoundException">If the file doesn't exist</exception>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.IFileResolver.GetFiles(System.String)">
+            <summary>
+            Get a list of all the files in a folder
+            </summary>
+            <param name="path">An absolute path of a folder to enumerate the files of</param>
+            <returns>A list of absolute paths for the list of files in the folder. May be empty.</returns>
+            <exception cref="T:System.IO.FileNotFoundException">If the folder doesn't exist</exception>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.IFileResolver.GetFolders(System.String)">
+            <summary>
+            Get a list of all the subfolders in a folder
+            </summary>
+            <param name="path">An absolute path of a folder to enumerate the subfolders of</param>
+            <returns>A list of absolute paths for the list of subfolders in the folder. May be empty.</returns>
+            <exception cref="T:System.IO.FileNotFoundException">If the folder doesn't exist</exception>
+        </member>
+        <member name="T:Sledge.Formats.FileSystem.VirtualSubdirectoryFileResolver">
+            <summary>
+            A file resolver that can emulate a package to have all its contents in a subfolder instead of the root path.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.VirtualSubdirectoryFileResolver.MakePaths(System.String)">
+            <summary>
+            Gets the non-virtual child or parent path given virtual path.
+            Only one will be non-null, if any.
+            If both are null, the virtual path cannot be resolved.
+            </summary>
+            <param name="path">The virtual path from the caller</param>
+            <returns>A tuple of the unvirtualised parent or child paths</returns>
+        </member>
+        <member name="T:Sledge.Formats.FileSystem.ZipArchiveResolver">
+            <summary>
+            A file resolver for a zip file. Zip archives are treated as case-sensitive on all platforms.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.ZipArchiveResolver.#ctor(System.String)">
+            <summary>
+            Create an instance for a file on disk.
+            </summary>
+            <param name="filePath">Path to the file</param>
+        </member>
+        <member name="M:Sledge.Formats.FileSystem.ZipArchiveResolver.#ctor(System.IO.Compression.ZipArchive,System.Boolean)">
+            <summary>
+            Create an instance for a <see cref="T:System.IO.Compression.ZipArchive"/>.
+            </summary>
+            <param name="zip">The ZipArchive instance</param>
+            <param name="leaveOpen">False to dispose the archive when this instance is disposed, true to leave it undisposed</param>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Box">
+            <summary>
+            An axis-aligned bounding box
+            </summary>
+        </member>
+        <member name="F:Sledge.Formats.Geometric.Box.Empty">
+            <summary>
+            An empty box with both the start and end vectors being zero.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.Start">
+            <summary>
+            The minimum corner of the box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.End">
+            <summary>
+            The maximum corner of the box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.Center">
+            <summary>
+            The center of the box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.Width">
+            <summary>
+            The X value difference of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.Length">
+            <summary>
+            The Y value difference of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.Height">
+            <summary>
+            The Z value difference of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.SmallestDimension">
+            <summary>
+            Get the smallest dimension of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.LargestDimension">
+            <summary>
+            Get the largest dimension of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Box.Dimensions">
+            <summary>
+            Get the width (X), length (Y), and height (Z) of this box as a vector.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.#ctor(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <summary>
+            Create a box from the given start and end points.
+            The resulting box is not guaranteed to have identical start and end vectors as provided - the
+            resulting box will have the start and end points set to the true minimum/maximum values of
+            each dimension (X, Y, Z).
+            </summary>
+            <param name="start"></param>
+            <param name="end"></param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.#ctor(System.Collections.Generic.IEnumerable{System.Numerics.Vector3})">
+            <summary>
+            Create a box from the given list of vectors
+            </summary>
+            <param name="vectors">The list of vectors to create the box from. There must be at least one vector in the list.</param>
+            <exception cref="T:System.InvalidOperationException">If the list of vectors is empty</exception>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Box})">
+            <summary>
+            Create a box from the given list of boxes
+            </summary>
+            <param name="boxes">The list of boxes to create the box from. There must be at least one box in the list.</param>
+            <exception cref="T:System.InvalidOperationException">If the list of boxes is empty</exception>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.IsEmpty(System.Single)">
+            <summary>
+            The box is considered empty if the width, height, and length are all less than the provided epsilon
+            </summary>
+            <returns>True if the box is empty</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.GetBoxPoints">
+            <summary>
+            Get the 8 corners of the box
+            </summary>
+            <returns>A list of 8 points</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.ToPolyhedron">
+            <summary>
+            Create a polyhedron from this box
+            </summary>
+            <returns>This box as a polyhedron</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.GetBoxPlanes">
+            <summary>
+            Get the 6 planes representing the sides of this box
+            </summary>
+            <returns>A list of 6 planes</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.GetBoxFaces">
+            <summary>
+            Get the 6 polygons representing the sides of this box
+            </summary>
+            <returns>A list of 6 polygons</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.GetBoxLines">
+            <summary>
+            Get the 12 lines representing the edges of this box
+            </summary>
+            <returns>A list of 12 lines</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.IntersectsWith(Sledge.Formats.Geometric.Box)">
+            <summary>
+            Returns true if this box overlaps the given box in any way
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.ContainedWithin(Sledge.Formats.Geometric.Box)">
+            <summary>
+            Returns true if this box is completely inside the given box
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.IntersectsWith(Sledge.Formats.Geometric.Line)">
+            <summary>
+            Returns true if this box intersects the given line
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.Vector3IsInside(System.Numerics.Vector3)">
+            <summary>
+            Returns true if the given Vector3 is inside this box.
+            </summary>
+            <param name="c"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.Transform(System.Numerics.Matrix4x4)">
+            <summary>
+            Transform this box. Each corner of the box will be transformed, and then a new box will be created using those points.
+            The dimensions of the resulting box may change if the transform isn't a simple translation.
+            </summary>
+            <param name="transform">The transformation to apply</param>
+            <returns>A new box after the transformation has been applied</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Box.Clone">
+            <summary>
+            Create a copy of this box.
+            </summary>
+            <returns>A copy of the box</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Polygon">
+            <summary>
+            Represents a coplanar, directed polygon with at least 3 vertices.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Polygon.Vertices">
+            <summary>
+            The vertices for the polygon, in counter-clockwise order when looking at the visible face of the polygon.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polygon.#ctor(System.Collections.Generic.IEnumerable{System.Numerics.Vector3})">
+            <summary>
+            Creates a polygon from a list of points
+            </summary>
+            <param name="vertices">The vertices of the polygon</param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polygon.#ctor(System.Numerics.Vector3[])">
+            <summary>
+            Creates a polygon from a list of points
+            </summary>
+            <param name="vertices">The vertices of the polygon</param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polygon.#ctor(System.Numerics.Plane,System.Single)">
+            <summary>
+            Creates a polygon from a plane and a radius.
+            Expands the plane to the radius size to create a large polygon with 4 vertices.
+            </summary>
+            <param name="plane">The polygon plane</param>
+            <param name="radius">The polygon radius</param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polygon.Split(System.Numerics.Plane,Sledge.Formats.Geometric.Polygon@,Sledge.Formats.Geometric.Polygon@)">
+            <summary>
+            Splits this polygon by a clipping plane, returning the back and front planes.
+            The original polygon is not modified.
+            </summary>
+            <param name="clip">The clipping plane</param>
+            <param name="back">The back polygon</param>
+            <param name="front">The front polygon</param>
+            <returns>True if the split was successful</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polygon.Split(System.Numerics.Plane,Sledge.Formats.Geometric.Polygon@,Sledge.Formats.Geometric.Polygon@,Sledge.Formats.Geometric.Polygon@,Sledge.Formats.Geometric.Polygon@)">
+            <summary>
+            Splits this polygon by a clipping plane, returning the back and front planes.
+            The original polygon is not modified.
+            </summary>
+            <param name="clip">The clipping plane</param>
+            <param name="back">The back polygon</param>
+            <param name="front">The front polygon</param>
+            <param name="coplanarBack">If the polygon rests on the plane and points backward, this will not be null</param>
+            <param name="coplanarFront">If the polygon rests on the plane and points forward, this will not be null</param>
+            <returns>True if the split was successful</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Polyhedron">
+            <summary>
+            Represents a convex polyhedron with at least 4 sides.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polyhedron.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Polygon})">
+            <summary>
+            Creates a polyhedron from a list of polygons which are assumed to be valid.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polyhedron.#ctor(System.Collections.Generic.IEnumerable{System.Numerics.Plane})">
+            <summary>
+            Creates a polyhedron by intersecting a set of at least 4 planes.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Polyhedron.Split(System.Numerics.Plane,Sledge.Formats.Geometric.Polyhedron@,Sledge.Formats.Geometric.Polyhedron@)">
+            <summary>
+            Splits this polyhedron into two polyhedron by intersecting against a plane.
+            </summary>
+            <param name="plane">The splitting plane</param>
+            <param name="back">The back side of the polyhedron</param>
+            <param name="front">The front side of the polyhedron</param>
+            <returns>True if the plane splits the polyhedron, false if the plane doesn't intersect</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Precision.Boxd">
+            <summary>
+            An axis-aligned bounding box. Uses double precision floating points.
+            </summary>
+        </member>
+        <member name="F:Sledge.Formats.Geometric.Precision.Boxd.Empty">
+            <summary>
+            An empty box with both the start and end vectors being zero.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.Start">
+            <summary>
+            The minimum corner of the box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.End">
+            <summary>
+            The maximum corner of the box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.Center">
+            <summary>
+            The center of the box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.Width">
+            <summary>
+            The X value difference of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.Length">
+            <summary>
+            The Y value difference of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.Height">
+            <summary>
+            The Z value difference of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.SmallestDimension">
+            <summary>
+            Get the smallest dimension of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.LargestDimension">
+            <summary>
+            Get the largest dimension of this box
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Boxd.Dimensions">
+            <summary>
+            Get the width (X), length (Y), and height (Z) of this box as a vector.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.#ctor(Sledge.Formats.Geometric.Precision.Vector3d,Sledge.Formats.Geometric.Precision.Vector3d)">
+            <summary>
+            Create a box from the given start and end points.
+            The resulting box is not guaranteed to have identical start and end vectors as provided - the
+            resulting box will have the start and end points set to the true minimum/maximum values of
+            each dimension (X, Y, Z).
+            </summary>
+            <param name="start"></param>
+            <param name="end"></param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Precision.Vector3d})">
+            <summary>
+            Create a box from the given list of vectors
+            </summary>
+            <param name="vectors">The list of vectors to create the box from. There must be at least one vector in the list.</param>
+            <exception cref="T:System.InvalidOperationException">If the list of vectors is empty</exception>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Precision.Boxd})">
+            <summary>
+            Create a box from the given list of boxes
+            </summary>
+            <param name="boxes">The list of boxes to create the box from. There must be at least one box in the list.</param>
+            <exception cref="T:System.InvalidOperationException">If the list of boxes is empty</exception>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.IsEmpty(System.Double)">
+            <summary>
+            The box is considered empty if the width, height, and length are all less than the provided epsilon
+            </summary>
+            <returns>True if the box is empty</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.GetBoxPoints">
+            <summary>
+            Get the 8 corners of the box
+            </summary>
+            <returns>A list of 8 points</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.ToPolyhedrond">
+            <summary>
+            Create a polyhedron from this box
+            </summary>
+            <returns>This box as a polyhedron</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.GetBoxPlanes">
+            <summary>
+            Get the 6 planes representing the sides of this box
+            </summary>
+            <returns>A list of 6 planes</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.GetBoxFaces">
+            <summary>
+            Get the 6 polygons representing the sides of this box
+            </summary>
+            <returns>A list of 6 polygons</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.GetBoxLines">
+            <summary>
+            Get the 12 lines representing the edges of this box
+            </summary>
+            <returns>A list of 12 lines</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.IntersectsWith(Sledge.Formats.Geometric.Precision.Boxd)">
+            <summary>
+            Returns true if this box overlaps the given box in any way
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.ContainedWithin(Sledge.Formats.Geometric.Precision.Boxd)">
+            <summary>
+            Returns true if this box is completely inside the given box
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.IntersectsWith(Sledge.Formats.Geometric.Precision.Lined)">
+            <summary>
+            Returns true if this box intersects the given line
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.Vector3IsInside(Sledge.Formats.Geometric.Precision.Vector3d)">
+            <summary>
+            Returns true if the given Vector3d is inside this box.
+            </summary>
+            <param name="c"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.Transform(System.Numerics.Matrix4x4)">
+            <summary>
+            Transform this box. Each corner of the box will be transformed, and then a new box will be created using those points.
+            The dimensions of the resulting box may change if the transform isn't a simple translation.
+            </summary>
+            <param name="transform">The transformation to apply</param>
+            <returns>A new box after the transformation has been applied</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Boxd.Clone">
+            <summary>
+            Create a copy of this box.
+            </summary>
+            <returns>A copy of the box</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Precision.Planed">
+            <summary>
+            Defines a plane in the form Ax + By + Cz + D = 0. Uses double precision floating points.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.GetPointOnPlane">
+            <summary>
+            Gets an arbitrary point on this plane.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.CreateFromVertices(Sledge.Formats.Geometric.Precision.Vector3d,Sledge.Formats.Geometric.Precision.Vector3d,Sledge.Formats.Geometric.Precision.Vector3d)">
+            <summary>
+            Create a plane from 3 vertices. Assumes that the vertices are ordered counter-clockwise.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.OnPlane(Sledge.Formats.Geometric.Precision.Vector3d,System.Double)">
+            <summary>Finds if the given point is above, below, or on the plane.</summary>
+            <param name="co">The Vector3 to test</param>
+            <param name="epsilon">Tolerance value</param>
+            <returns>
+            PlaneClassification.Back if Vector3 is below the plane<br />
+            PlaneClassification.Front if Vector3 is above the plane<br />
+            PlaneClassification.OnPlane if Vector3 is on the plane.
+            </returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.GetIntersectionPoint(Sledge.Formats.Geometric.Precision.Vector3d,Sledge.Formats.Geometric.Precision.Vector3d,System.Boolean,System.Boolean)">
+            <summary>
+            Gets the point that the line intersects with this plane.
+            </summary>
+            <param name="start">The start of the line to intersect with</param>
+            <param name="end">The end of the line to intersect with</param>
+            <param name="ignoreDirection">Set to true to ignore the direction
+            of the plane and line when intersecting. Defaults to false.</param>
+            <param name="ignoreSegment">Set to true to ignore the start and
+            end points of the line in the intersection. Defaults to false.</param>
+            <returns>The point of intersection, or null if the line does not intersect</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.Project(Sledge.Formats.Geometric.Precision.Vector3d)">
+            <summary>
+            Project a point into the space of this plane. I.e. Get the point closest
+            to the provided point that is on this plane.
+            </summary>
+            <param name="point">The point to project</param>
+            <returns>The point projected onto this plane</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.DotCoordinate(Sledge.Formats.Geometric.Precision.Vector3d)">
+            <summary>Evaluates the value of the plane formula at the given coordinate.</summary>
+            <remarks>Returns the dot product of a specified three-dimensional vector and the normal vector of this plane plus the distance (<see cref="F:System.Numerics.Plane.D" />) value of the plane.</remarks>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.GetClosestAxisToNormal">
+            <summary>
+            Gets the axis closest to the normal of this plane
+            </summary>
+            <returns>Vector3.UnitX, Vector3.UnitY, or Vector3.UnitZ depending on the plane's normal</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Planed.Intersect(Sledge.Formats.Geometric.Precision.Planed,Sledge.Formats.Geometric.Precision.Planed,Sledge.Formats.Geometric.Precision.Planed)">
+            <summary>
+            Intersects three planes and gets the point of their intersection.
+            </summary>
+            <returns>The point that the planes intersect at, or null if they do not intersect at a point.</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Precision.Polygond">
+            <summary>
+            Represents a coplanar, directed polygon with at least 3 vertices. Uses double precision floating points.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Geometric.Precision.Polygond.Vertices">
+            <summary>
+            The vertices for the polygon, in counter-clockwise order when looking at the visible face of the polygon.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polygond.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Precision.Vector3d})">
+            <summary>
+            Creates a polygon from a list of points
+            </summary>
+            <param name="vertices">The vertices of the polygon</param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polygond.#ctor(Sledge.Formats.Geometric.Precision.Vector3d[])">
+            <summary>
+            Creates a polygon from a list of points
+            </summary>
+            <param name="vertices">The vertices of the polygon</param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polygond.#ctor(Sledge.Formats.Geometric.Precision.Planed,System.Double)">
+            <summary>
+            Creates a polygon from a plane and a radius.
+            Expands the plane to the radius size to create a large polygon with 4 vertices.
+            </summary>
+            <param name="plane">The polygon plane</param>
+            <param name="radius">The polygon radius</param>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polygond.Split(Sledge.Formats.Geometric.Precision.Planed,Sledge.Formats.Geometric.Precision.Polygond@,Sledge.Formats.Geometric.Precision.Polygond@)">
+            <summary>
+            Splits this polygon by a clipping plane, returning the back and front planes.
+            The original polygon is not modified.
+            </summary>
+            <param name="clip">The clipping plane</param>
+            <param name="back">The back polygon</param>
+            <param name="front">The front polygon</param>
+            <returns>True if the split was successful</returns>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polygond.Split(Sledge.Formats.Geometric.Precision.Planed,Sledge.Formats.Geometric.Precision.Polygond@,Sledge.Formats.Geometric.Precision.Polygond@,Sledge.Formats.Geometric.Precision.Polygond@,Sledge.Formats.Geometric.Precision.Polygond@)">
+            <summary>
+            Splits this polygon by a clipping plane, returning the back and front planes.
+            The original polygon is not modified.
+            </summary>
+            <param name="clip">The clipping plane</param>
+            <param name="back">The back polygon</param>
+            <param name="front">The front polygon</param>
+            <param name="coplanarBack">If the polygon rests on the plane and points backward, this will not be null</param>
+            <param name="coplanarFront">If the polygon rests on the plane and points forward, this will not be null</param>
+            <returns>True if the split was successful</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Precision.Polyhedrond">
+            <summary>
+            Represents a convex polyhedron with at least 4 sides. Uses double precision floating points.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polyhedrond.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Precision.Polygond})">
+            <summary>
+            Creates a polyhedron from a list of polygons which are assumed to be valid.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polyhedrond.#ctor(System.Collections.Generic.IEnumerable{Sledge.Formats.Geometric.Precision.Planed})">
+            <summary>
+            Creates a polyhedron by intersecting a set of at least 4 planes.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Geometric.Precision.Polyhedrond.Split(Sledge.Formats.Geometric.Precision.Planed,Sledge.Formats.Geometric.Precision.Polyhedrond@,Sledge.Formats.Geometric.Precision.Polyhedrond@)">
+            <summary>
+            Splits this polyhedron into two polyhedron by intersecting against a plane.
+            </summary>
+            <param name="plane">The splitting plane</param>
+            <param name="back">The back side of the polyhedron</param>
+            <param name="front">The front side of the polyhedron</param>
+            <returns>True if the plane splits the polyhedron, false if the plane doesn't intersect</returns>
+        </member>
+        <member name="T:Sledge.Formats.Geometric.Precision.Vector3d">
+            <summary>
+            A 3-dimensional immutable vector that uses double precision floating points.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Id.MipTexture.#ctor">
+            <summary>
+            Create an empty <see cref="T:Sledge.Formats.Id.MipTexture"/>
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Id.MipTexture.#ctor(System.IO.Stream,System.Boolean)">
+            <summary>
+            Create a <see cref="T:Sledge.Formats.Id.MipTexture"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from</param>
+            <param name="readPalette">True to read the palette (i.e. Goldsource formats: BSP30 / WAD3)</param>
+        </member>
+        <member name="M:Sledge.Formats.Id.MipTexture.WriteTo(System.IO.Stream,System.Boolean)">
+            <summary>
+            Write this <see cref="T:Sledge.Formats.Id.MipTexture"/> to the provided stream.
+            </summary>
+            <param name="stream">The stream to write to</param>
+            <param name="writePalette">True to write the palette (i.e. Goldsource formats: BSP30 / WAD3)</param>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.Normalise(System.Numerics.Vector3)">
+            <inheritdoc cref="M:System.Numerics.Vector3.Normalize(System.Numerics.Vector3)"/>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.Absolute(System.Numerics.Vector3)">
+            <inheritdoc cref="M:System.Numerics.Vector3.Abs(System.Numerics.Vector3)"/>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.Dot(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <inheritdoc cref="M:System.Numerics.Vector3.Dot(System.Numerics.Vector3,System.Numerics.Vector3)"/>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.Cross(System.Numerics.Vector3,System.Numerics.Vector3)">
+            <inheritdoc cref="M:System.Numerics.Vector3.Cross(System.Numerics.Vector3,System.Numerics.Vector3)"/>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.ClosestAxis(System.Numerics.Vector3)">
+            <summary>
+            Gets the axis closest to this vector
+            </summary>
+            <returns>Vector3.UnitX, Vector3.UnitY, or Vector3.UnitZ depending on the given vector</returns>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.GetPointOnPlane(System.Numerics.Plane)">
+            <summary>
+            Gets an arbitrary point on this plane.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.OnPlane(System.Numerics.Plane,System.Numerics.Vector3,System.Double)">
+            <summary>Finds if the given point is above, below, or on the plane.</summary>
+            <param name="plane">The plane</param>
+            <param name="co">The Vector3 to test</param>
+            <param name="epsilon">Tolerance value</param>
+            <returns>
+            PlaneClassification.Back if Vector3 is below the plane<br />
+            PlaneClassification.Front if Vector3 is above the plane<br />
+            PlaneClassification.OnPlane if Vector3 is on the plane.
+            </returns>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.GetIntersectionPoint(System.Numerics.Plane,System.Numerics.Vector3,System.Numerics.Vector3,System.Boolean,System.Boolean)">
+            <summary>
+            Gets the point that the line intersects with this plane.
+            </summary>
+            <param name="plane">The plane</param>
+            <param name="start">The start of the line to intersect with</param>
+            <param name="end">The end of the line to intersect with</param>
+            <param name="ignoreDirection">Set to true to ignore the direction
+            of the plane and line when intersecting. Defaults to false.</param>
+            <param name="ignoreSegment">Set to true to ignore the start and
+            end points of the line in the intersection. Defaults to false.</param>
+            <returns>The point of intersection, or null if the line does not intersect</returns>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.Project(System.Numerics.Plane,System.Numerics.Vector3)">
+            <summary>
+            Project a point into the space of this plane. I.e. Get the point closest
+            to the provided point that is on this plane.
+            </summary>
+            <param name="plane">The plane</param>
+            <param name="point">The point to project</param>
+            <returns>The point projected onto this plane</returns>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.DotCoordinate(System.Numerics.Plane,System.Numerics.Vector3)">
+            <inheritdoc cref="M:System.Numerics.Plane.DotCoordinate(System.Numerics.Plane,System.Numerics.Vector3)"/>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.GetClosestAxisToNormal(System.Numerics.Plane)">
+            <summary>
+            Gets the axis closest to the normal of this plane
+            </summary>
+            <returns>Vector3.UnitX, Vector3.UnitY, or Vector3.UnitZ depending on the plane's normal</returns>
+        </member>
+        <member name="M:Sledge.Formats.NumericsExtensions.IntersectPlanes(System.Numerics.Plane,System.Numerics.Plane,System.Numerics.Plane)">
+            <summary>
+            Intersects three planes and gets the point of their intersection.
+            </summary>
+            <returns>The point that the planes intersect at, or null if they do not intersect at a point.</returns>
+        </member>
+        <member name="T:Sledge.Formats.StringExtensions">
+            <summary>
+            Common string extension methods
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.StringExtensions.SplitWithQuotes(System.String,System.Char[],System.Char,System.Char)">
+            <summary>
+            Split a string by a delimiter without splitting sequences within quotes.
+            </summary>
+            <param name="line">The string to split</param>
+            <param name="splitCharacters">The characters to split by. Defaults to space and tab characters if not specified.</param>
+            <param name="quoteChar">The character which indicates the start or end of a quote</param>
+            <param name="escapeChar">The character which indicates that the next character should be escaped</param>
+            <returns>The split result, with split characters removed</returns>
+        </member>
+        <member name="T:Sledge.Formats.SubStream">
+            <summary>
+            A stream that represents a sub-range within another stream.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.SubStream.CanRead">
+            <inheritdoc />
+        </member>
+        <member name="P:Sledge.Formats.SubStream.CanSeek">
+            <inheritdoc />
+        </member>
+        <member name="P:Sledge.Formats.SubStream.CanWrite">
+            <inheritdoc />
+        </member>
+        <member name="P:Sledge.Formats.SubStream.Position">
+            <inheritdoc />
+        </member>
+        <member name="P:Sledge.Formats.SubStream.Length">
+            <inheritdoc />
+        </member>
+        <member name="M:Sledge.Formats.SubStream.#ctor(System.IO.Stream,System.Int64,System.Int64,System.Boolean)">
+            <summary>
+            Create a new substream
+            </summary>
+            <param name="stream">The parent stream</param>
+            <param name="offset">The start of the substream</param>
+            <param name="length">The length of the substream</param>
+            <param name="keepOpen">True to keep the parent stream open after closing</param>
+        </member>
+        <member name="M:Sledge.Formats.SubStream.Seek(System.Int64,System.IO.SeekOrigin)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sledge.Formats.SubStream.Read(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sledge.Formats.SubStream.Dispose(System.Boolean)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sledge.Formats.SubStream.Flush">
+            <inheritdoc />
+        </member>
+        <member name="M:Sledge.Formats.SubStream.SetLength(System.Int64)">
+            <inheritdoc />
+        </member>
+        <member name="M:Sledge.Formats.SubStream.Write(System.Byte[],System.Int32,System.Int32)">
+            <inheritdoc />
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.DoubleSymbolTokenReader">
+            <summary>
+            Reads a symbol as two repetitions of single character from a list of valid symbols.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Tokens.Readers.ITokenReader.Read(System.Char,System.IO.TextReader)">
+            <summary>
+            Read a token. Returns null if no token is valid at this point.
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.MultiLineCommentTokenReader">
+            <summary>
+            Reads a comment surrounded by `/*` and `*/`
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.NameTokenReader">
+            <summary>
+            Reads a name starting with a-z, A-Z or `_` and followed by a-z, A-Z, `_`, `-`, or `.`.
+            These conditions can be customised with the `IsValidStartCharacter` and `IsValidContinuationCharacter` predicates.
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.NumberTokenReader">
+            <summary>
+            Reads a number consisting of a sign, integer component, decimal, decimal component, and exponent.
+            If sign is included, the integer component is mandatory.
+            If the decimal is included, the decimal component is mandatory.
+            If the exponent is included, either the integer or decimal components are mandatory.
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.SingleLineCommentTokenReader">
+            <summary>
+            Reads a comment prefixed by `//`
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.StringTokenReader">
+            <summary>
+            Reads a string surrounded by a quote character such as "
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.SymbolTokenReader">
+            <summary>
+            Reads a symbol as a single character from a list of valid symbols.
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.UnsignedDecimalTokenReader">
+            <summary>
+            Reads an integer or decimal consisting of at least one digit.
+            Sign prefixes are not included.
+            (allowed: `.1`, `1.`, `1.1`, `1`)
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Tokens.Readers.UnsignedIntegerTokenReader">
+            <summary>
+            Reads an integer consisting of at least one digit.
+            Sign prefixes are not included.
+            </summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Bang">
+            <summary>!</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.At">
+            <summary>@</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Hash">
+            <summary>#</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Dollar">
+            <summary>$</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Percent">
+            <summary>%</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Caret">
+            <summary>^</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Ampersand">
+            <summary>&amp;</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Star">
+            <summary>*</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.OpenParen">
+            <summary>(</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.CloseParen">
+            <summary>)</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.OpenBracket">
+            <summary>[</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.CloseBracket">
+            <summary>]</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.OpenBrace">
+            <summary>{</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.CloseBrace">
+            <summary>}</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Equal">
+            <summary>=</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Plus">
+            <summary>+</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Minus">
+            <summary>-</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Underscore">
+            <summary>_</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Backslash">
+            <summary>/</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Pipe">
+            <summary>|</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Colon">
+            <summary>:</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Semicolon">
+            <summary>;</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.DoubleQuote">
+            <summary>"</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.SingleQuote">
+            <summary>'</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Comma">
+            <summary>,</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Dot">
+            <summary>.</summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Slash">
+            <summary>/</summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:Sledge.Formats.Tokens.Symbols.Less" -->
+        <member name="F:Sledge.Formats.Tokens.Symbols.Greater">
+            <summary>></summary>
+        </member>
+        <member name="F:Sledge.Formats.Tokens.Symbols.Question">
+            <summary>?</summary>
+        </member>
+        <member name="M:Sledge.Formats.Tokens.TokenParsing.Expect(System.Collections.Generic.IEnumerator{Sledge.Formats.Tokens.Token},Sledge.Formats.Tokens.TokenType,System.Object)">
+            <summary>
+            Expect the current token to match a particular type and optionally a value, and then move to the next token
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Tokens.TokenParsing.Expect(System.Collections.Generic.IEnumerator{Sledge.Formats.Tokens.Token},Sledge.Formats.Tokens.TokenType,System.Predicate{System.String})">
+            <summary>
+            Expect the current token to match a particular type and optionally a value, and then move to the next token
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Tokens.TokenParsing.ExpectAny(System.Collections.Generic.IEnumerator{Sledge.Formats.Tokens.Token},Sledge.Formats.Tokens.TokenType[])">
+            <summary>
+            Expect the current token to match one of a list of particular types, and then move to the next token
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Tokens.TokenParsing.ParseInteger(System.Collections.Generic.IEnumerator{Sledge.Formats.Tokens.Token})">
+            <summary>
+            Starting at the current token, parse an integer with an optional leading sign
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Tokens.TokenParsing.ParseDecimal(System.Collections.Generic.IEnumerator{Sledge.Formats.Tokens.Token})">
+            <summary>
+            Starting at the current token, parse a decimal with an optional leading sign and decimal place
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Valve.Liblist">
+            <summary>
+            The liblist.gam file, used by Goldsource games and mods.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.Game">
+            <summary>
+            The name of the game/mod.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.Icon">
+            <summary>
+            A path to an uncompressed, 24bit, 16x16 resolution TGA file, relative to the mod directory, with no file extension.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.Developer">
+            <summary>
+            The name of the team or person who created this game/mod.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.DeveloperUrl">
+            <summary>
+            A URL to the developer's website.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.Manual">
+            <summary>
+            A URL to the game/mod's manual.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.GameDll">
+            <summary>
+            The path to the game's DLL file on Windows, relative to the mod directory. e.g. "dlls\hl.dll"
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.GameDllLinux">
+            <summary>
+            The path to the game's DLL file on Linux, relative to the mod directory. e.g. "dlls/hl.so"
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.GameDllOsx">
+            <summary>
+            The path to the game's DLL file on OSX, relative to the mod directory. e.g. "dlls/hl.dylib"
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.Secure">
+            <summary>
+            Enable VAC security.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.ServerOnly">
+            <summary>
+            If this is a server-only mod.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.ClientDllRequired">
+            <summary>
+            If the mod requires a new client.dll
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.Type">
+            <summary>
+            The type of game/mod. Usually "singleplayer_only" or "multiplayer_only".
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.StartingMap">
+            <summary>
+            The name of the map to load when the player starts a new game, without the extension. e.g. "c0a0"
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.TrainingMap">
+            <summary>
+            The name of the map to load when the player starts the training map, without the extension. e.g. "t0a0"
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.MultiplayerEntity">
+            <summary>
+            The name of the multiplayer entity class.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.MultiplayerFilter">
+            <summary>
+            Do not show maps with names containing this string in create server dialogue.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.FallbackDirectory">
+            <summary>
+            The mod/game to base this mod/game off of. e.g. "cstrike"
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.FallbackMaps">
+            <summary>
+            True to load maps from the base game/mod.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.NoModels">
+            <summary>
+            Prevent the player model from being anything except player.mdl.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.NoHighDefinitionModels">
+            <summary>
+            Don't allow HD models.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.Liblist.DetailedTextures">
+            <summary>
+            Use detailed textures.
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Valve.SerialisedObject">
+            <summary>
+            Represents a serialised object with basic features similar to XML.
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.SerialisedObject.Name">
+            <summary>
+            The name of the object
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.SerialisedObject.Properties">
+            <summary>
+            The properties (or attributes) of the object
+            </summary>
+        </member>
+        <member name="P:Sledge.Formats.Valve.SerialisedObject.Children">
+            <summary>
+            A list of child objects
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObject.#ctor(System.String)">
+            <summary>
+            Construct a blank <see cref="T:Sledge.Formats.Valve.SerialisedObject"/> with the provided name.
+            </summary>
+            <param name="name">The name of the object</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObject.#ctor(System.IO.Stream)">
+            <summary>
+            Construct a <see cref="T:Sledge.Formats.Valve.SerialisedObject"/> from a stream.
+            If the stream does not contain exactly one serialised object, an exception will be thrown.
+            </summary>
+            <param name="stream">The stream to read exactly one <see cref="T:Sledge.Formats.Valve.SerialisedObject"/> from</param>
+            <exception cref="T:System.InvalidOperationException">If the stream does not contain exactly one serialised object</exception>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObject.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Constructor for <see cref="T:System.Runtime.Serialization.ISerializable"/> creation.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObject.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc cref="M:System.Runtime.Serialization.ISerializable.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)"/>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObject.WriteTo(System.IO.Stream)">
+            <summary>
+            Serialise this object to the provided stream.
+            </summary>
+            <param name="stream">The stream to write to</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObject.ToString">
+            <summary>
+            Convert this object to a serialised object string
+            </summary>
+        </member>
+        <member name="T:Sledge.Formats.Valve.SerialisedObjectExtensions">
+            <summary>
+            Common extensions for serialised objects
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectExtensions.Set``1(Sledge.Formats.Valve.SerialisedObject,System.String,``0,System.Boolean)">
+            <summary>
+            Set a property value for a serialised object. The value will be converted with a type converter, if one exists.
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="so">The serialised object</param>
+            <param name="key">The property key to set</param>
+            <param name="value">The value to set</param>
+            <param name="replace">True to replace any properties with the same key</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectExtensions.Get``1(Sledge.Formats.Valve.SerialisedObject,System.String,``0)">
+            <summary>
+            Get a property value from a serialised object. The value will be converted with a type converter, if one exists.
+            </summary>
+            <typeparam name="T">Value type</typeparam>
+            <param name="so">The serialised object</param>
+            <param name="key">The property key to get</param>
+            <param name="defaultValue">The default value to use if the key doesn't exists, or couldn't be converted</param>
+            <returns>The property value, or the default value if the key wasn't found</returns>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectExtensions.SetColor(Sledge.Formats.Valve.SerialisedObject,System.String,System.Drawing.Color)">
+            <summary>
+            Set a property value to a colour
+            </summary>
+            <param name="so">The serialised object</param>
+            <param name="key">The property key to set</param>
+            <param name="color">The value to set</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectExtensions.GetColor(Sledge.Formats.Valve.SerialisedObject,System.String)">
+            <summary>
+            Get a colour property from the serialised object
+            </summary>
+            <param name="so">The serialised object</param>
+            <param name="key">The property key to get</param>
+            <returns>The property value as a colour</returns>
+        </member>
+        <member name="T:Sledge.Formats.Valve.SerialisedObjectFormatter">
+            <summary>
+            Handles serialisation of objects using Valve's common definition format.
+            </summary>
+        </member>
+        <member name="F:Sledge.Formats.Valve.SerialisedObjectFormatter.Instance">
+            <summary>
+            Singleton instance of a <see cref="T:Sledge.Formats.Valve.SerialisedObjectFormatter"/>.
+            </summary>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectFormatter.Serialize(System.IO.Stream,Sledge.Formats.Valve.SerialisedObject[])">
+            <summary>
+            Serialise an array of objects
+            </summary>
+            <param name="serializationStream">The stream to serialise into</param>
+            <param name="objects">The objects to serialise</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectFormatter.Serialize(System.IO.Stream,System.Collections.Generic.IEnumerable{Sledge.Formats.Valve.SerialisedObject})">
+            <summary>
+            Serialise an array of objects
+            </summary>
+            <param name="serializationStream">The stream to serialise into</param>
+            <param name="objects">The objects to serialise</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectFormatter.Deserialize(System.IO.Stream)">
+            <summary>
+            Deserialise an array of objects from a stream
+            </summary>
+            <param name="serializationStream">The stream to deserialise from</param>
+            <returns>The deserialised objects</returns>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectFormatter.LengthLimit(System.String,System.Int32)">
+            <summary>
+            Ensure a string doesn't exceed a length limit.
+            </summary>
+            <param name="str">The string to check</param>
+            <param name="limit">The length limit</param>
+            <returns>The string, truncated to the limit if it was exceeded</returns>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectFormatter.Print(Sledge.Formats.Valve.SerialisedObject,System.IO.TextWriter,System.Int32)">
+            <summary>
+            Print the structure to a stream
+            </summary>
+            <param name="obj">The object to print</param>
+            <param name="tw">The output stream to write to</param>
+            <param name="tabs">The number of tabs to indent this value to</param>
+        </member>
+        <member name="M:Sledge.Formats.Valve.SerialisedObjectFormatter.Parse(System.IO.TextReader)">
+            <summary>
+            Parse a structure from a stream
+            </summary>
+            <param name="reader">The TextReader to parse from</param>
+            <returns>The parsed structure</returns>
+        </member>
+    </members>
+</doc>
