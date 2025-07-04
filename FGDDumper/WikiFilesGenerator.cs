@@ -1,35 +1,53 @@
 ﻿using Sledge.Formats.GameData.Objects;
 using Sledge.Formats.GameData;
 using Sledge.Formats.FileSystem;
-using ValveResourceFormat;
-using SteamDatabase.ValvePak;
 using ValveResourceFormat.ResourceTypes;
 using ValveResourceFormat.IO;
-using System.IO;
-using System.Security.Claims;
+using System.Text.Json;
 
 namespace FGDDumper
 {
-    public class WikiFilesGenerator
+    public static class WikiFilesGenerator
     {
-        // dictionary from entity classname -> page of that entity in every game it exists in
-        private Dictionary<string, List<EntityPage>> PagesDictionary = new();
-
-        private string DocsFolder = string.Empty;
-        private string PagesFolder = string.Empty;
-        private string EntityImagesFolder = string.Empty;
-
-        public WikiFilesGenerator(string docsFolder, string pagesFolder, string entityImagesFolder)
+        public static void GenerateMDXFromJSONDump()
         {
-            DocsFolder = docsFolder;
-            PagesFolder = pagesFolder;
-            EntityImagesFolder = entityImagesFolder;
+            string[] jsonDocs = Directory.GetFiles(FGDDumper.RootDumpFolder);
+
+            foreach (var jsonDoc in jsonDocs)
+            {
+                var doc = JsonSerializer.Deserialize<EntityDocument>(File.ReadAllText(jsonDoc), JsonStuff.GetOptions());
+
+                if(doc is null)
+                {
+                    throw new InvalidDataException("Failed to deserialise json document!");
+                }
+
+                Directory.CreateDirectory(FGDDumper.RootDocsFolder);
+
+                var docPath = Path.Combine(FGDDumper.RootDocsFolder, $"{doc.Name}.mdx");
+
+                var docText = doc.GetMDXText();
+                File.WriteAllText(docPath, docText);
+
+                foreach (var page in doc.Pages)
+                {
+                    var pagePath = Path.Combine(FGDDumper.RootPagesFolder, page.GetPageRelativePath());
+                    Directory.CreateDirectory(Path.GetDirectoryName(pagePath)!);
+                    File.WriteAllText(pagePath, page.GetMDXText());
+                }
+            }
+        }
+
+        public static void DumpFGD()
+        {
+            // dictionary from entity classname -> page of that entity in every game it exists in
+            var pagesDictionary = new Dictionary<string, List<EntityPage>>();
 
             foreach (GameFinder.Game game in GameFinder.GameList)
             {
                 var gamePath = GameFinder.GetSystemPathForGame(game);
 
-                if(string.IsNullOrEmpty(gamePath))
+                if (string.IsNullOrEmpty(gamePath))
                 {
                     continue;
                 }
@@ -58,23 +76,28 @@ namespace FGDDumper
 
                         if (page is not null)
                         {
-                            AddToDict(page.Name, page);
+                            if (pagesDictionary.ContainsKey(page.Name))
+                            {
+                                pagesDictionary[page.Name].Add(page);
+                            }
+                            else
+                            {
+                                pagesDictionary[page.Name] = new List<EntityPage> { page };
+                            }
                         }
                     }
                 }
             }
-        }
 
-        public void SaveFilesToDisk()
-        {
-            foreach ((string pageName, List<EntityPage> pages) in PagesDictionary)
+            foreach ((string pageName, List<EntityPage> pages) in pagesDictionary)
             {
                 var doc = EntityDocument.GetDocument(pageName, pages);
 
-                Directory.CreateDirectory(DocsFolder);
+                Directory.CreateDirectory(FGDDumper.RootDumpFolder);
+                var docPath = Path.Combine(FGDDumper.RootDumpFolder, $"{doc.Name}.json");
 
-                var docPath = Path.Combine(DocsFolder, $"{doc.Name}.mdx");
-                File.WriteAllText(docPath, doc.GetText());
+                var jsonText = JsonSerializer.Serialize(doc, JsonStuff.GetOptions());
+                File.WriteAllText(docPath, jsonText);
 
                 foreach (var page in doc.Pages)
                 {
@@ -113,25 +136,20 @@ namespace FGDDumper
                             using var bitmap = textureExtract.Bitmap;
                             using var data = bitmap.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
 
-                            var texturePath = Path.Combine(EntityImagesFolder, page.Game.FileSystemName);
-                            Directory.CreateDirectory(texturePath);
-                            using var stream = File.OpenWrite(Path.Combine(texturePath, $"{page.Name}.png"));
+                            Directory.CreateDirectory(Path.Combine(FGDDumper.WikiRoot, page.GetImageRelativeFolder()));
+                            using var stream = File.OpenWrite(Path.Combine(FGDDumper.WikiRoot, page.GetImageRelativePath()));
                             data.SaveTo(stream);
                         }
                     }
-
-                    var pagePath = Path.Combine(PagesFolder, page.GetPageRelativePath());
-                    Directory.CreateDirectory(Path.GetDirectoryName(pagePath));
-                    File.WriteAllText(pagePath, page.GetText());
                 }
             }
         }
 
-        private string? GetMaterialColorTexture(Material material)
+        private static string? GetMaterialColorTexture(Material material)
         {
             foreach (var textureParam in material.TextureParams)
             {
-                if(textureParam.Key == "g_tColor")
+                if (textureParam.Key == "g_tColor")
                 {
                     return textureParam.Value;
                 }
@@ -153,18 +171,6 @@ namespace FGDDumper
             }
 
             return string.Empty;
-        }
-
-        private void AddToDict(string key, EntityPage value)
-        {
-            if (PagesDictionary.ContainsKey(key))
-            {
-                PagesDictionary[key].Add(value);
-            }
-            else
-            {
-                PagesDictionary[key] = new List<EntityPage> { value };
-            }
         }
     }
 

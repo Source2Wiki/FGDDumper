@@ -139,6 +139,24 @@ namespace FGDDumper
             new Game("SteamVR Home", "steamvr", "SteamVR\\tools\\steamvr_environments\\game", "steamtours", ["steamtours.fgd"])
         };
 
+        public static Game? GetGameByFileSystemName(string? name)
+        {
+            if(string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            foreach (var game in GameList)
+            {
+                if(game.FileSystemName == name)
+                {
+                    return game;
+                }
+            }
+
+            return null;
+        }
+
         private static string? GetSteamInstallPath()
         {
             string? steamPath = null;

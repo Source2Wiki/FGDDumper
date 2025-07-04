@@ -3,9 +3,9 @@
     public class EntityDocument
     {
         public string Name { get; init; } = string.Empty;
-        public List<EntityPage> Pages { get; private set; } = new();
+        public List<EntityPage> Pages { get; init; } = new();
 
-        public string GetText()
+        public string GetMDXText()
         {
             string tabImports = string.Empty;
             string tabs = string.Empty;

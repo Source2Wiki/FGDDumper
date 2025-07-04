@@ -12,6 +12,15 @@ namespace FGDDumper
 
         public static string WikiRoot { get; private set; } = string.Empty;
 
+        public const  string DocsFolder = "docs\\Entities";
+        public static string RootDocsFolder { get; private set; } = string.Empty;
+
+        public const  string PagesFolder = "src\\pages\\Entities";
+        public static string RootPagesFolder { get; private set; } = string.Empty;
+
+        public const  string DumpFolder = "fgd_dump";
+        public static string RootDumpFolder { get; private set; } = string.Empty;
+
         public static void Main(string[] args)
         {
             //test args
@@ -61,15 +70,14 @@ namespace FGDDumper
 
             WikiRoot = root;
 
+            RootDocsFolder = Path.Combine(WikiRoot, DocsFolder);
+            RootPagesFolder = Path.Combine(WikiRoot, PagesFolder);
+            RootDumpFolder= Path.Combine(WikiRoot, DumpFolder);
+
             Console.WriteLine("Starting...");
 
-            var docsFolder = Path.Combine(WikiRoot, "docs\\Entities");
-            var pagesFolder = Path.Combine(WikiRoot, "src\\pages\\Entities");
-            var entityImagesFolder = Path.Combine(WikiRoot, "static\\img\\Entities");
-
-            var WikiFileGen = new WikiFilesGenerator(docsFolder, pagesFolder, entityImagesFolder);
-
-            WikiFileGen.SaveFilesToDisk();
+            //WikiFilesGenerator.DumpFGD();
+            WikiFilesGenerator.GenerateMDXFromJSONDump();
 
             return 0;
         }

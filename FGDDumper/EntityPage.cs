@@ -1,5 +1,6 @@
 ﻿using Sledge.Formats.GameData.Objects;
 using System.Net;
+using System.Runtime.Serialization;
 using System.Text.RegularExpressions;
 using static FGDDumper.GameFinder;
 
@@ -17,11 +18,12 @@ namespace FGDDumper
 
         public enum EntityTypeEnum
         {
+            Default,
             Point,
             Mesh
         }
 
-        public string GetText()
+        public string GetMDXText()
         {
             var propertiesString = string.Empty;
 
@@ -36,7 +38,7 @@ namespace FGDDumper
 
                 foreach (var property in Properties)
                 {
-                    propertiesString += property.GetText();
+                    propertiesString += property.GetMDXText();
                 }
 
                 propertiesString += "\n </details>";
@@ -60,7 +62,7 @@ namespace FGDDumper
 
                 foreach (var input in inputs)
                 {
-                    inputsString += input.GetText();
+                    inputsString += input.GetMDXText();
                 }
 
                 inputsString += "\n </details>";
@@ -77,7 +79,7 @@ namespace FGDDumper
 
                 foreach (var output in outputs)
                 {
-                    outputsString += output.GetText();
+                    outputsString += output.GetMDXText();
                 }
 
                 outputsString += "\n </details>";
@@ -87,7 +89,7 @@ namespace FGDDumper
             string iconText = string.Empty;
             if (!string.IsNullOrEmpty(IconPath))
             {
-                var textureImagePath = $"static/img/Entities/{Game.FileSystemName}/{Name}.png";
+                var textureImagePath = GetImageRelativePath();
 
                 if (File.Exists(Path.Combine(FGDDumper.WikiRoot, textureImagePath)))
                 {
@@ -123,21 +125,22 @@ namespace FGDDumper
                 Output
             }
 
-            public required VariableType VariableType { get; init; }
-            public required TypeEnum Type { get; init; }
             public required string Name { get; init; }
             public required string Description { get; init; }
+            public required VariableType VariableType { get; init; }
+            public required TypeEnum Type { get; init; }
 
-            public string GetText()
+            public string GetMDXText()
             {
                 return $"- {Name} \\<`{VariableType}`\\>\\\n{Description}\n\n";
             }
         }
 
-        public class Annotation
+        public class Annotation : ISerializable
         {
             public enum TypeEnum
             {
+                Default,
                 note,
                 tip,
                 info,
@@ -148,7 +151,13 @@ namespace FGDDumper
             public required string Message { get; init; }
             public required TypeEnum Type { get; init; }
 
-            public string GetText()
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                info.AddValue("Message", Message);
+                info.AddValue("TypeEnum", Type.ToString());
+            }
+
+            public string GetMDXText()
             {
                 return
                 $"""
@@ -176,7 +185,7 @@ namespace FGDDumper
 
             public List<Annotation> Annotations { get; set; } = [];
 
-            public string GetText()
+            public string GetMDXText()
             {
                 var propertyString = string.Empty;
 
@@ -208,13 +217,23 @@ namespace FGDDumper
 
                 foreach (var annotation in Annotations)
                 {
-                    propertyString += $"\n{annotation.GetText()}";
+                    propertyString += $"\n{annotation.GetMDXText()}";
                 }
 
                 propertyString += "\n\n";
 
                 return propertyString;
             }
+        }
+
+        public string GetImageRelativeFolder()
+        {
+            return $"{FGDDumper.DumpFolder}/img/{Game.FileSystemName}";
+        }
+
+        public string GetImageRelativePath()
+        {
+            return $"{GetImageRelativeFolder()}/{Name}.png";
         }
 
         public string GetPageRelativePath()
