@@ -1,9 +1,9 @@
-﻿using Sledge.Formats.GameData.Objects;
-using Sledge.Formats.GameData;
-using Sledge.Formats.FileSystem;
-using ValveResourceFormat.ResourceTypes;
-using ValveResourceFormat.IO;
 using System.Text.Json;
+using Sledge.Formats.FileSystem;
+using Sledge.Formats.GameData;
+using Sledge.Formats.GameData.Objects;
+using ValveResourceFormat.IO;
+using ValveResourceFormat.ResourceTypes;
 
 namespace FGDDumper
 {
@@ -23,7 +23,7 @@ namespace FGDDumper
             {
                 var doc = JsonSerializer.Deserialize(File.ReadAllText(jsonDoc), JsonContext.Default.EntityDocument);
 
-                if(doc is null)
+                if (doc is null)
                 {
                     throw new InvalidDataException("Failed to deserialise json document!");
                 }
@@ -69,7 +69,7 @@ namespace FGDDumper
 
                 var fileName = Path.GetFileNameWithoutExtension(file);
                 var splitFilename = fileName.Split("-");
-                if(splitFilename.Length > 2)
+                if (splitFilename.Length > 2)
                 {
                     throw new InvalidDataException("Invalid override entity filename! correct format is {entityClassname}.json or {entityClassname}-{gameFileSystemName}.json\n");
                 }
@@ -79,7 +79,7 @@ namespace FGDDumper
 
                 docsDictionary.TryGetValue(entityClass, out EntityDocument? docToOverride);
 
-                if(docToOverride == null)
+                if (docToOverride == null)
                 {
                     throw new InvalidDataException($"Invalid override entity class, could not match any entity to '{entityClass}'!\n");
                 }
@@ -88,8 +88,8 @@ namespace FGDDumper
                 {
                     var gameString = splitFilename[1];
                     entityGame = GameFinder.GetGameByFileSystemName(gameString);
-                
-                    if(entityGame == null)
+
+                    if (entityGame == null)
                     {
                         var error = $"Invalid override entity game '{gameString}'! valid game names are: \n\n";
 
@@ -103,16 +103,21 @@ namespace FGDDumper
                     }
                 }
 
-                if(entityGame == null)
+                if (entityGame == null)
                 {
-                    var overrideEntitypage = JsonSerializer.Deserialize(File.ReadAllText(file), JsonContext.Default.EntityPage);
+                    var text = File.ReadAllText(file);
+                    if (string.IsNullOrEmpty(text))
+                    {
+                        throw new InvalidDataException($"JSON file has empty content! {file}");
+                    }
+                    var overrideEntitypage = JsonSerializer.Deserialize(text, JsonContext.Default.EntityPage);
                     globalPageOverrides.Add((entityClass, overrideEntitypage!));
                 }
                 else
                 {
                     foreach (var page in docToOverride.Pages)
                     {
-                        if(page.Game == entityGame)
+                        if (page.Game == entityGame)
                         {
                             var overrideEntitypage = JsonSerializer.Deserialize(File.ReadAllText(file), JsonContext.Default.EntityPage);
                             overrideEntitypage!.Game = entityGame;
@@ -137,8 +142,8 @@ namespace FGDDumper
                 docsDictionary.TryGetValue(gameSpecificOverrideClassname, out var doc);
 
                 foreach (var page in doc!.Pages)
-                {   
-                    if(page.Game == gameSpecificOverride.Game)
+                {
+                    if (page.Game == gameSpecificOverride.Game)
                     {
                         page.OverrideFrom(gameSpecificOverride);
                     }
@@ -286,7 +291,7 @@ namespace FGDDumper
 
         private static void WriteFileIfContentsChanged(string path, string? contents)
         {
-            if(File.Exists(path))
+            if (File.Exists(path))
             {
                 var oldFileText = File.ReadAllText(path);
                 if (oldFileText == contents)
