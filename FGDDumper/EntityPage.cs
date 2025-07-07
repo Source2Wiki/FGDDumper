@@ -1,8 +1,8 @@
-﻿using Sledge.Formats.GameData.Objects;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization.Metadata;
 using System.Text.RegularExpressions;
+using Sledge.Formats.GameData.Objects;
 using static FGDDumper.GameFinder;
 
 namespace FGDDumper

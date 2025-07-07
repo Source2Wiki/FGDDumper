@@ -1,7 +1,6 @@
-﻿using Microsoft.Win32;
-using SteamDatabase.ValvePak;
 using System.Text.RegularExpressions;
-using ValveKeyValue;
+using Microsoft.Win32;
+using SteamDatabase.ValvePak;
 using ValveResourceFormat;
 using ValveResourceFormat.IO;
 
@@ -53,7 +52,7 @@ namespace FGDDumper
             private bool CachedGameFileLoaders = false;
             public Resource? LoadVPKFileCompiled(string filePath)
             {
-                if(!CachedGameFileLoaders)
+                if (!CachedGameFileLoaders)
                 {
                     CachedGameFileLoaders = true;
 
@@ -72,7 +71,7 @@ namespace FGDDumper
                 {
                     var resource = loader.LoadFileCompiled(filePath);
 
-                    if(resource != null)
+                    if (resource != null)
                     {
                         return resource;
                     }
@@ -136,19 +135,21 @@ namespace FGDDumper
         public static readonly List<Game> GameList = new()
         {
             new Game("Counter-Strike 2", "cs2", "Counter-Strike Global Offensive\\game", "csgo", ["csgo.fgd"]),
-            new Game("SteamVR Home", "steamvr", "SteamVR\\tools\\steamvr_environments\\game", "steamtours", ["steamtours.fgd"])
+            new Game("SteamVR Home", "steamvr", "SteamVR\\tools\\steamvr_environments\\game", "steamtours", ["steamtours.fgd"]),
+            new Game("Dota 2", "dota2", "dota 2 beta\\game", "dota", ["dota.fgd"]),
+            new Game("Half-Life: Alyx", "hla", "Half-Life Alyx\\game", "hlvr", ["hlvr.fgd"]),
         };
 
         public static Game? GetGameByFileSystemName(string? name)
         {
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return null;
             }
 
             foreach (var game in GameList)
             {
-                if(game.FileSystemName == name)
+                if (game.FileSystemName == name)
                 {
                     return game;
                 }

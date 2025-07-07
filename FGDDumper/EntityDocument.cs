@@ -1,4 +1,4 @@
-﻿namespace FGDDumper
+namespace FGDDumper
 {
     public class EntityDocument
     {
@@ -12,8 +12,6 @@
 
             foreach (var page in Pages)
             {
-                Directory.CreateDirectory("D:\\Dev\\Source2Wiki\\src\\pages\\Entities");
-
                 // i shouldnt have to wonder why this needs .ToUpper() to render the page in the tab, yet here we are!
                 tabImports += $"import {page.Game!.FileSystemName.ToUpper()}Page from '@site/src/pages/Entities/{page.GetPageRelativePath()}';\n";
 
@@ -60,7 +58,7 @@
 
         public static EntityDocument GetDocument(string classname, List<EntityPage> pages)
         {
-            if(pages.Count == 0)
+            if (pages.Count == 0)
             {
                 throw new InvalidDataException("Cant have an entity document with 0 entity pages!");
             }

@@ -1,5 +1,5 @@
-﻿using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using static FGDDumper.JsonStuff;
 
 namespace FGDDumper
@@ -111,10 +111,10 @@ namespace FGDDumper
                 JsonSerializer.Serialize(writer, value.PageAnnotation, JsonContext.Default.Annotation);
 
                 writer.WritePropertyName("Properties");
-                JsonSerializer.Serialize(writer, value.Properties, JsonContext.Default.Property);
+                JsonSerializer.Serialize(writer, value.Properties, JsonContext.Default.ListProperty);
 
                 writer.WritePropertyName("InputOutputs");
-                JsonSerializer.Serialize(writer, value.InputOutputs, JsonContext.Default.InputOutput);
+                JsonSerializer.Serialize(writer, value.InputOutputs, JsonContext.Default.ListInputOutput);
 
                 writer.WriteEndObject();
             }

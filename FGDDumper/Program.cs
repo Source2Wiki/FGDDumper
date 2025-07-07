@@ -1,4 +1,4 @@
-﻿
+
 using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -13,13 +13,13 @@ namespace FGDDumper
 
         public static string WikiRoot { get; private set; } = string.Empty;
 
-        public const  string DocsFolder = "docs\\Entities";
+        public const string DocsFolder = "docs\\Entities";
         public static string RootDocsFolder { get; private set; } = string.Empty;
 
-        public const  string PagesFolder = "src\\pages\\Entities";
+        public const string PagesFolder = "src\\pages\\Entities";
         public static string RootPagesFolder { get; private set; } = string.Empty;
 
-        public const  string DumpFolder = "fgd_dump";
+        public const string DumpFolder = "fgd_dump";
         public static string RootDumpFolder { get; private set; } = string.Empty;
 
         public const string OverridesFolder = "fgd_dump_overrides";
@@ -30,7 +30,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:\\Dev\\Source2Wiki", "--generate_mdx"];
+            args = ["--root", "C:\\LOCAL\\Git\\Source2Wiki", "--generate_mdx"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -60,7 +60,7 @@ namespace FGDDumper
         /// to generate the actual wiki pages.</param>
         public static int Run(string root, bool generate_mdx, bool dump_json)
         {
-            if(string.IsNullOrEmpty(root))
+            if (string.IsNullOrEmpty(root))
             {
                 Console.WriteLine("Docs output path can't be empty");
                 return 1;
@@ -91,15 +91,15 @@ namespace FGDDumper
             RootDumpFolder = Path.Combine(WikiRoot, DumpFolder);
             RootOverridesFolder = Path.Combine(WikiRoot, OverridesFolder);
 
-            
+
             Console.WriteLine("Starting...");
 
-            if(dump_json)
+            if (dump_json)
             {
                 WikiFilesGenerator.DumpFGD();
             }
 
-            if(generate_mdx)
+            if (generate_mdx)
             {
                 try
                 {
@@ -113,7 +113,8 @@ namespace FGDDumper
                 var fileWatcher = new FileSystemWatcherEx(RootOverridesFolder);
 
                 Console.WriteLine($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
-                fileWatcher.OnChanged += (object? sender, FileChangedEvent e) => {
+                fileWatcher.OnChanged += (object? sender, FileChangedEvent e) =>
+                {
 
                     Console.WriteLine($"File '{e.FullPath}' changed, updating MDX.");
                     try
