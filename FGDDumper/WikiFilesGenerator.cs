@@ -11,35 +11,145 @@ namespace FGDDumper
     {
         public static void GenerateMDXFromJSONDump()
         {
-            string[] jsonDocs = Directory.GetFiles(FGDDumper.RootDumpFolder);
+            Console.WriteLine("\nGenerating MDX pages from JSON dump!\n");
+
+            var docsDictionary = new Dictionary<string, EntityDocument>();
+
+            string[] overrides = Directory.GetFiles(EntityPageTools.RootOverridesFolder);
+
+            string[] jsonDocs = Directory.GetFiles(EntityPageTools.RootDumpFolder);
 
             foreach (var jsonDoc in jsonDocs)
             {
-                var doc = JsonSerializer.Deserialize<EntityDocument>(File.ReadAllText(jsonDoc), JsonStuff.GetOptions());
+                var doc = JsonSerializer.Deserialize<EntityDocument>(File.ReadAllText(jsonDoc), JsonContext.Default.EntityDocument);
 
                 if(doc is null)
                 {
                     throw new InvalidDataException("Failed to deserialise json document!");
                 }
 
-                Directory.CreateDirectory(FGDDumper.RootDocsFolder);
+                docsDictionary.Add(doc.Name, doc);
+            }
 
-                var docPath = Path.Combine(FGDDumper.RootDocsFolder, $"{doc.Name}.mdx");
+            HandleOverrides(overrides, docsDictionary);
+
+            Directory.CreateDirectory(EntityPageTools.RootDocsFolder);
+
+            foreach ((string docName, EntityDocument doc) in docsDictionary)
+            {
+                var docPath = Path.Combine(EntityPageTools.RootDocsFolder, $"{doc.Name}.mdx");
 
                 var docText = doc.GetMDXText();
-                File.WriteAllText(docPath, docText);
+                WriteFileIfContentsChanged(docPath, docText);
 
                 foreach (var page in doc.Pages)
                 {
-                    var pagePath = Path.Combine(FGDDumper.RootPagesFolder, page.GetPageRelativePath());
+                    var pagePath = Path.Combine(EntityPageTools.RootPagesFolder, page.GetPageRelativePath());
                     Directory.CreateDirectory(Path.GetDirectoryName(pagePath)!);
-                    File.WriteAllText(pagePath, page.GetMDXText());
+
+                    WriteFileIfContentsChanged(pagePath, page.GetMDXText());
+                }
+            }
+        }
+
+        // the format for overrides filename is 'entityClassname'-'gameFileSystemName'.json or just 'entityClassname'.json
+        // if only entityClassname is provided, we treat the override as being global
+        // global overrides get processed first, then game specific ones
+        public static void HandleOverrides(string[] files, Dictionary<string, EntityDocument> docsDictionary)
+        {
+            List<(string classname, EntityPage)> globalPageOverrides = [];
+            List<(string classname, EntityPage)> gameSpecificPageOverrides = [];
+
+            foreach (var file in files)
+            {
+                if (Path.GetExtension(file) != ".json")
+                {
+                    continue;
+                }
+
+                var fileName = Path.GetFileNameWithoutExtension(file);
+                var splitFilename = fileName.Split("-");
+                if(splitFilename.Length > 2)
+                {
+                    throw new InvalidDataException("Invalid override entity filename! correct format is {entityClassname}.json or {entityClassname}-{gameFileSystemName}.json\n");
+                }
+
+                var entityClass = splitFilename[0];
+                GameFinder.Game? entityGame = null;
+
+                docsDictionary.TryGetValue(entityClass, out EntityDocument? docToOverride);
+
+                if(docToOverride == null)
+                {
+                    throw new InvalidDataException($"Invalid override entity class, could not match any entity to '{entityClass}'!\n");
+                }
+
+                if (splitFilename.Length == 2)
+                {
+                    var gameString = splitFilename[1];
+                    entityGame = GameFinder.GetGameByFileSystemName(gameString);
+                
+                    if(entityGame == null)
+                    {
+                        var error = $"Invalid override entity game '{gameString}'! valid game names are: \n\n";
+
+                        foreach (var game in GameFinder.GameList)
+                        {
+                            error += $"{game.FileSystemName}\n";
+                        }
+
+                        error += "\nIn case you meant to make this a global override for all games, simply remove the - at the end, and make the filename be {entityClassname}.json\n";
+                        throw new InvalidDataException(error);
+                    }
+                }
+
+                if(entityGame == null)
+                {
+                    var overrideEntitypage = JsonSerializer.Deserialize<EntityPage>(File.ReadAllText(file), JsonContext.Default.EntityPage);
+                    globalPageOverrides.Add((entityClass, overrideEntitypage!));
+                }
+                else
+                {
+                    foreach (var page in docToOverride.Pages)
+                    {
+                        if(page.Game == entityGame)
+                        {
+                            var overrideEntitypage = JsonSerializer.Deserialize<EntityPage>(File.ReadAllText(file), JsonContext.Default.EntityPage);
+                            overrideEntitypage!.Game = entityGame;
+                            gameSpecificPageOverrides.Add((entityClass, overrideEntitypage!));
+                        }
+                    }
+                }
+            }
+
+            foreach ((string globalOverrideClassname, EntityPage globalOverride) in globalPageOverrides)
+            {
+                docsDictionary.TryGetValue(globalOverrideClassname, out var doc);
+
+                foreach (var page in doc!.Pages)
+                {
+                    page.OverrideFrom(globalOverride);
+                }
+            }
+
+            foreach ((string gameSpecificOverrideClassname, EntityPage gameSpecificOverride) in gameSpecificPageOverrides)
+            {
+                docsDictionary.TryGetValue(gameSpecificOverrideClassname, out var doc);
+
+                foreach (var page in doc!.Pages)
+                {   
+                    if(page.Game == gameSpecificOverride.Game)
+                    {
+                        page.OverrideFrom(gameSpecificOverride);
+                    }
                 }
             }
         }
 
         public static void DumpFGD()
         {
+            Console.WriteLine("\nDumping FGD to JSON!\n");
+
             // dictionary from entity classname -> page of that entity in every game it exists in
             var pagesDictionary = new Dictionary<string, List<EntityPage>>();
 
@@ -93,11 +203,8 @@ namespace FGDDumper
             {
                 var doc = EntityDocument.GetDocument(pageName, pages);
 
-                Directory.CreateDirectory(FGDDumper.RootDumpFolder);
-                var docPath = Path.Combine(FGDDumper.RootDumpFolder, $"{doc.Name}.json");
-
-                var jsonText = JsonSerializer.Serialize(doc, JsonStuff.GetOptions());
-                File.WriteAllText(docPath, jsonText);
+                Directory.CreateDirectory(EntityPageTools.RootDumpFolder);
+                var docPath = Path.Combine(EntityPageTools.RootDumpFolder, $"{doc.Name}.json");
 
                 foreach (var page in doc.Pages)
                 {
@@ -118,7 +225,7 @@ namespace FGDDumper
                             iconPath += ".vmat";
                         }
 
-                        var entityIconVmatResource = page.Game.LoadVPKFileCompiled(iconPath);
+                        var entityIconVmatResource = page.Game!.LoadVPKFileCompiled(iconPath);
 
                         if (entityIconVmatResource?.DataBlock != null)
                         {
@@ -136,12 +243,16 @@ namespace FGDDumper
                             using var bitmap = textureExtract.Bitmap;
                             using var data = bitmap.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
 
-                            Directory.CreateDirectory(Path.Combine(FGDDumper.WikiRoot, page.GetImageRelativeFolder()));
-                            using var stream = File.OpenWrite(Path.Combine(FGDDumper.WikiRoot, page.GetImageRelativePath()));
+                            page.IconPath = page.GetImageRelativePath();
+                            Directory.CreateDirectory(Path.Combine(EntityPageTools.WikiRoot, page.GetImageRelativeFolder()));
+                            using var stream = File.OpenWrite(Path.Combine(EntityPageTools.WikiRoot, page.IconPath));
                             data.SaveTo(stream);
                         }
                     }
                 }
+
+                var jsonText = JsonSerializer.Serialize(doc, JsonContext.Default.EntityDocument);
+                File.WriteAllText(docPath, jsonText);
             }
         }
 
@@ -171,6 +282,20 @@ namespace FGDDumper
             }
 
             return string.Empty;
+        }
+
+        private static void WriteFileIfContentsChanged(string path, string? contents)
+        {
+            if(File.Exists(path))
+            {
+                var oldFileText = File.ReadAllText(path);
+                if (oldFileText == contents)
+                {
+                    return;
+                }
+            }
+
+            File.WriteAllText(path, contents);
         }
     }
 

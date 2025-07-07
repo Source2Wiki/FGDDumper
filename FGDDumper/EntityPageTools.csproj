@@ -5,6 +5,7 @@
     <TargetFramework>net9.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	  <PublishAot>true</PublishAot>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="FileWatcherEx" Version="2.6.0" />
     <PackageReference Include="System.Text.Json" Version="9.0.6" />
     <PackageReference Include="ValvePak" Version="2.0.1.107" />
     <PackageReference Include="ValveResourceFormat" Version="13.0.4499" />

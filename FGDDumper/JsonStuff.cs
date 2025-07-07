@@ -1,10 +1,21 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
-using System.Collections.Generic;
-using Sledge.Formats.GameData.Objects;
+using static FGDDumper.JsonStuff;
 
 namespace FGDDumper
 {
+    [JsonSourceGenerationOptions(
+               PropertyNamingPolicy = JsonKnownNamingPolicy.Unspecified,
+               WriteIndented = true,
+               Converters = [typeof(EntityPageJsonConverter), typeof(JsonStringEnumConverter)]
+           )]
+    [JsonSerializable(typeof(EntityPage))]
+    [JsonSerializable(typeof(EntityPage.Property))]
+    [JsonSerializable(typeof(EntityDocument))]
+    public partial class JsonContext : JsonSerializerContext
+    {
+    }
+
     public static class JsonStuff
     {
         public class EntityPageJsonConverter : JsonConverter<EntityPage>
@@ -68,15 +79,6 @@ namespace FGDDumper
                     }
                 }
 
-                if
-                (   game == null ||
-                    (entityType == EntityPage.EntityTypeEnum.Default) ||
-                    string.IsNullOrEmpty(name)
-                )
-                {
-                    throw new InvalidOperationException("Failed to deserialise json object!");
-                }
-
                 return new EntityPage
                 {
                     Game = game,
@@ -94,7 +96,7 @@ namespace FGDDumper
             {
                 writer.WriteStartObject();
 
-                writer.WriteString("Game", value.Game.FileSystemName);
+                writer.WriteString("Game", value.Game?.FileSystemName);
                 writer.WriteString("EntityType", value.EntityType.ToString());
                 writer.WriteString("Name", value.Name);
                 writer.WriteString("Description", value.Description);
@@ -109,184 +111,5 @@ namespace FGDDumper
                 writer.WriteEndObject();
             }
         }
-
-        public class EntityPropertyJsonConverter : JsonConverter<EntityPage.Property>
-        {
-            public override EntityPage.Property Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions jsonOptions)
-            {
-                if (reader.TokenType != JsonTokenType.StartObject)
-                {
-                    throw new JsonException("Expected StartObject token");
-                }
-
-                string? friendlyName = null;
-                string? internalName = null;
-                string description = string.Empty;
-                VariableType? type = null;
-                List<EntityPage.Property.Option> options = [];
-                List<EntityPage.Annotation> annotations = [];
-
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonTokenType.EndObject)
-                    {
-                        break;
-                    }
-
-                    if (reader.TokenType != JsonTokenType.PropertyName)
-                    {
-                        throw new JsonException("Expected PropertyName token");
-                    }
-
-                    string? propertyName = reader.GetString();
-                    reader.Read();
-
-                    switch (propertyName)
-                    {
-                        case "FriendlyName":
-                            friendlyName = reader.GetString();
-                            break;
-                        case "InternalName":
-                            internalName = reader.GetString();
-                            break;
-                        case "Description":
-                            description = reader.GetString() ?? string.Empty;
-                            break;
-                        case "Type":
-                            type = Enum.Parse<VariableType>(reader.GetString() ?? string.Empty);
-                            break;
-                        case "Options":
-                            options = JsonSerializer.Deserialize<List<EntityPage.Property.Option>>(ref reader, jsonOptions) ?? [];
-                            break;
-                        case "Annotations":
-                            annotations = JsonSerializer.Deserialize<List<EntityPage.Annotation>>(ref reader, jsonOptions) ?? [];
-                            break;
-                        default:
-                            reader.Skip();
-                            break;
-                    }
-                }
-
-                if
-                (   string.IsNullOrEmpty(friendlyName) ||
-                    string.IsNullOrEmpty(internalName) || 
-                    (type == null)
-                )
-                {
-                    throw new InvalidOperationException("Failed to deserialise json object!");
-                }
-
-                return new EntityPage.Property
-                {
-                    FriendlyName = friendlyName,
-                    InternalName = internalName,
-                    Description = description,
-                    Type = (VariableType)type,
-                    Options = options,
-                    Annotations = annotations
-
-                };
-
-            }
-
-            public override void Write(Utf8JsonWriter writer, EntityPage.Property value, JsonSerializerOptions options)
-            {
-                writer.WriteStartObject();
-
-                writer.WriteString("FriendlyName", value.FriendlyName);
-                writer.WriteString("InternalName", value.InternalName);
-                writer.WriteString("Type", value.Type.ToString());
-                writer.WriteString("Description", value.Description);
-
-                writer.WritePropertyName("Options");
-                JsonSerializer.Serialize(writer, value.Options, options);
-
-                writer.WritePropertyName("Annotations");
-                JsonSerializer.Serialize(writer, value.Annotations, options);
-
-                writer.WriteEndObject();
-            }
-        }
-
-        public class DocumentJsonConverter : JsonConverter<EntityDocument>
-        {
-            public override EntityDocument Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType != JsonTokenType.StartObject)
-                {
-                    throw new JsonException("Expected StartObject token");
-                }
-            
-                string? name = string.Empty;
-                List<EntityPage> pages = [];
-
-                while (reader.Read())
-                {
-                    if (reader.TokenType == JsonTokenType.EndObject)
-                    {
-                        break;
-                    }
-
-                    if (reader.TokenType != JsonTokenType.PropertyName)
-                    {
-                        throw new JsonException("Expected PropertyName token");
-                    }
-
-                    string? propertyName = reader.GetString();
-                    reader.Read();
-
-                    switch (propertyName)
-                    {
-                        case "Name":
-                            name = reader.GetString() ?? string.Empty;
-                            break;
-                        case "Pages":
-                            pages = JsonSerializer.Deserialize<List<EntityPage>>(ref reader, options) ?? [];
-                            break;
-                        default:
-                            reader.Skip();
-                            break;
-                    }
-                }
-
-                if (string.IsNullOrEmpty(name) || pages.Count == 0)
-                {
-                    throw new InvalidOperationException("Failed to deserialise json object!");
-                }
-
-                return new EntityDocument
-                {
-                    Name = name,
-                    Pages = pages,
-                };
-            }
-
-            public override void Write(Utf8JsonWriter writer, EntityDocument value, JsonSerializerOptions options)
-            {
-                writer.WriteStartObject();
-
-                writer.WriteString("Name", value.Name);
-                
-                writer.WritePropertyName("Pages");
-                JsonSerializer.Serialize(writer, value.Pages, options);
-
-                writer.WriteEndObject();
-            }
-        }
-
-        public static JsonSerializerOptions GetOptions()
-        {
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true,
-                Converters = { new EntityPageJsonConverter() }
-            };
-
-            options.Converters.Add(new JsonStringEnumConverter());
-
-            return options;
-        }
-
     }
 }
