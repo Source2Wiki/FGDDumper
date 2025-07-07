@@ -21,7 +21,7 @@ namespace FGDDumper
 
             foreach (var jsonDoc in jsonDocs)
             {
-                var doc = JsonSerializer.Deserialize<EntityDocument>(File.ReadAllText(jsonDoc), JsonContext.Default.EntityDocument);
+                var doc = JsonSerializer.Deserialize(File.ReadAllText(jsonDoc), JsonContext.Default.EntityDocument);
 
                 if(doc is null)
                 {
@@ -105,7 +105,7 @@ namespace FGDDumper
 
                 if(entityGame == null)
                 {
-                    var overrideEntitypage = JsonSerializer.Deserialize<EntityPage>(File.ReadAllText(file), JsonContext.Default.EntityPage);
+                    var overrideEntitypage = JsonSerializer.Deserialize(File.ReadAllText(file), JsonContext.Default.EntityPage);
                     globalPageOverrides.Add((entityClass, overrideEntitypage!));
                 }
                 else
@@ -114,7 +114,7 @@ namespace FGDDumper
                     {
                         if(page.Game == entityGame)
                         {
-                            var overrideEntitypage = JsonSerializer.Deserialize<EntityPage>(File.ReadAllText(file), JsonContext.Default.EntityPage);
+                            var overrideEntitypage = JsonSerializer.Deserialize(File.ReadAllText(file), JsonContext.Default.EntityPage);
                             overrideEntitypage!.Game = entityGame;
                             gameSpecificPageOverrides.Add((entityClass, overrideEntitypage!));
                         }
