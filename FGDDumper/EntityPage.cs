@@ -2,6 +2,7 @@
 using System.Net;
 using System.Runtime.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization.Metadata;
 using System.Text.RegularExpressions;
 using static FGDDumper.EntityPage;
 using static FGDDumper.GameFinder;
@@ -16,6 +17,7 @@ namespace FGDDumper
         public string Description { get; set; } = string.Empty;
         public string IconPath { get; set; } = string.Empty;
         public List<Property> Properties { get; set; } = [];
+        public Annotation? PageAnnotation = null;
         public List<InputOutput> InputOutputs { get; set; } = [];
 
         public enum EntityTypeEnum
@@ -32,11 +34,11 @@ namespace FGDDumper
             if (Properties.Count > 0)
             {
                 propertiesString =
-                    $"""
-                    <details open>
-                    <summary><h2>Keyvalues</h2></summary>
+                $"""
+                <details open>
+                <summary><h2>Keyvalues</h2></summary>
 
-                    """;
+                """;
 
                 foreach (var property in Properties)
                 {
@@ -118,7 +120,7 @@ namespace FGDDumper
             
             {iconText}
             {EntityType} Entity
-
+            {PageAnnotation?.GetMDXText() ?? string.Empty}
             {SanitizeInput(Description)}
 
             {propertiesString}
@@ -146,6 +148,11 @@ namespace FGDDumper
                 IconPath = overridePage.IconPath;
             }
 
+            if (overridePage.PageAnnotation != null)
+            {
+                PageAnnotation = overridePage.PageAnnotation;
+            }
+
             foreach (var overrideProperty in overridePage.Properties)
             {
                 var matched = false;
@@ -166,7 +173,7 @@ namespace FGDDumper
                         overrideProperty.VariableType = VariableType.Void;
                     }
 
-                    Properties.Add(CloneObject(overrideProperty));
+                    Properties.Add(CloneObject(overrideProperty, JsonContext.Default.Property));
                 }
             }
 
@@ -185,7 +192,7 @@ namespace FGDDumper
 
                 if (!matched)
                 {
-                    InputOutputs.Add(CloneObject(overrideInputOutput));
+                    InputOutputs.Add(CloneObject(overrideInputOutput, JsonContext.Default.InputOutput));
                 }
 
             }
@@ -365,7 +372,7 @@ namespace FGDDumper
 
                     if (!matched)
                     {
-                        Options.Add(CloneObject(overrideOption));
+                        Options.Add(CloneObject(overrideOption, JsonContext.Default.Option));
                     }
 
                 }
@@ -385,7 +392,7 @@ namespace FGDDumper
 
                     if (!matched)
                     {
-                        Annotations.Add(CloneObject(overrideAnnotation));
+                        Annotations.Add(CloneObject(overrideAnnotation, JsonContext.Default.Annotation));
                     }
 
                 }
@@ -542,9 +549,9 @@ namespace FGDDumper
         }
 
         // really quite horrible but what can you do
-        private static T CloneObject<T>(T objectToClone)
+        private static T CloneObject<T>(T objectToClone, JsonTypeInfo<T> jsonTypeInfo)
         {
-            return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize<T>(objectToClone))!;
+            return JsonSerializer.Deserialize(JsonSerializer.Serialize(objectToClone, jsonTypeInfo), jsonTypeInfo)!;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace FGDDumper
                 string? name = string.Empty;
                 string description = string.Empty;
                 string iconPath = string.Empty;
+                EntityPage.Annotation? pageAnnotation = null;
                 List<EntityPage.Property> properties = [];
                 List<EntityPage.InputOutput> inputOutputs = [];
 
@@ -67,11 +68,14 @@ namespace FGDDumper
                         case "IconPath":
                             iconPath = reader.GetString() ?? string.Empty;
                             break;
+                        case "PageAnnotation":
+                            pageAnnotation = JsonSerializer.Deserialize(ref reader, JsonContext.Default.Annotation);
+                            break;
                         case "Properties":
-                            properties = JsonSerializer.Deserialize<List<EntityPage.Property>>(ref reader, options) ?? [];
+                            properties = JsonSerializer.Deserialize(ref reader, JsonContext.Default.ListProperty) ?? [];
                             break;
                         case "InputOutputs":
-                            inputOutputs = JsonSerializer.Deserialize<List<EntityPage.InputOutput>>(ref reader, options) ?? [];
+                            inputOutputs = JsonSerializer.Deserialize(ref reader, JsonContext.Default.ListInputOutput) ?? [];
                             break;
                         default:
                             reader.Skip();
@@ -83,9 +87,10 @@ namespace FGDDumper
                 {
                     Game = game,
                     EntityType = entityType,
-                    Name = name,
+                    Name = name ?? string.Empty,
                     Description = description,
                     IconPath = iconPath,
+                    PageAnnotation = pageAnnotation,
                     Properties = properties,
                     InputOutputs = inputOutputs
                 };
@@ -102,11 +107,14 @@ namespace FGDDumper
                 writer.WriteString("Description", value.Description);
                 writer.WriteString("IconPath", value.IconPath);
 
+                writer.WritePropertyName("PageAnnotation");
+                JsonSerializer.Serialize(writer, value.PageAnnotation, JsonContext.Default.Annotation);
+
                 writer.WritePropertyName("Properties");
-                JsonSerializer.Serialize(writer, value.Properties, options);
+                JsonSerializer.Serialize(writer, value.Properties, JsonContext.Default.Property);
 
                 writer.WritePropertyName("InputOutputs");
-                JsonSerializer.Serialize(writer, value.InputOutputs, options);
+                JsonSerializer.Serialize(writer, value.InputOutputs, JsonContext.Default.InputOutput);
 
                 writer.WriteEndObject();
             }
