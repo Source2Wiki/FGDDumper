@@ -1,4 +1,5 @@
 using System.Text.Json;
+using EntityPageTools;
 using Sledge.Formats.FileSystem;
 using Sledge.Formats.GameData;
 using Sledge.Formats.GameData.Objects;
@@ -11,14 +12,25 @@ namespace FGDDumper
     {
         public static void GenerateMDXFromJSONDump()
         {
-            Console.WriteLine("\nGenerating MDX pages from JSON dump!\n");
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Generating MDX pages from JSON dump!"));
+
+            var gamesList = GameFinder.GameList;
 
             var docsDictionary = new Dictionary<string, EntityDocument>();
 
-            string[] overrides = Directory.GetFiles(EntityPageTools.RootOverridesFolder);
-
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Loading JSON docs!"));
             string[] jsonDocs = Directory.GetFiles(EntityPageTools.RootDumpFolder);
+            Logging.Log($"Found '{jsonDocs.Length}' JSON doc(s)");
 
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Loading page overrides!"));
+            string[] overrides = Directory.GetFiles(EntityPageTools.RootOverridesFolder);
+            Logging.Log($"Found '{overrides.Length}' page override(s)");
+
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Deserialising JSON docs into page docs!"));
             foreach (var jsonDoc in jsonDocs)
             {
                 var doc = JsonSerializer.Deserialize(File.ReadAllText(jsonDoc), JsonContext.Default.EntityDocument);
@@ -30,26 +42,69 @@ namespace FGDDumper
 
                 docsDictionary.Add(doc.Name, doc);
             }
+            Logging.Log("Finished deserialising");
 
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Handling page overrides!"));
             HandleOverrides(overrides, docsDictionary);
 
             Directory.CreateDirectory(EntityPageTools.RootDocsFolder);
 
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Writing out MDX files from classes!"));
+
+            var skippedDocs = 0;
+            var wroteDocs = 0;
+            var skippedPages = 0;
+            var wrotePages = 0;
+
             foreach ((string docName, EntityDocument doc) in docsDictionary)
             {
                 var docPath = Path.Combine(EntityPageTools.RootDocsFolder, $"{doc.Name}.mdx");
-
                 var docText = doc.GetMDXText();
-                WriteFileIfContentsChanged(docPath, docText);
+
+                var wroteFile = WriteFileIfContentsChanged(docPath, docText);
+
+                if (wroteFile)
+                {
+                    wroteDocs++;
+                    Logging.Log($"Wrote document '{docPath}'");
+                }
+                else
+                {
+                    skippedDocs++;
+                    if (Logging.Verbose)
+                    {
+                        Logging.Log($"Skipped writing document '{docPath}' because the file contents did not change.");
+                    }
+                }
+
 
                 foreach (var page in doc.Pages)
                 {
                     var pagePath = Path.Combine(EntityPageTools.RootPagesFolder, page.GetPageRelativePath());
                     Directory.CreateDirectory(Path.GetDirectoryName(pagePath)!);
 
-                    WriteFileIfContentsChanged(pagePath, page.GetMDXText());
+                    var wrotePage = WriteFileIfContentsChanged(pagePath, page.GetMDXText());
+
+                    if (wrotePage)
+                    {
+                        wrotePages++;
+                        Logging.Log($"\nWrote page '{pagePath}' because file contents changed");
+                    }
+                    else
+                    {
+                        skippedPages++;
+                        if (Logging.Verbose)
+                        {
+                            Logging.Log($"Skipped writing page '{pagePath}' because the file contents did not change.");
+                        }
+                    }
                 }
             }
+
+            Logging.Log($"\nWrote '{wroteDocs}' document(s), skipped '{skippedDocs}' document(s) with contents that did not change");
+            Logging.Log($"Wrote '{wrotePages}' page(s), skipped '{skippedPages}' page(s) with contents that did not change");
         }
 
         // the format for overrides filename is 'entityClassname'-'gameFileSystemName'.json or just 'entityClassname'.json
@@ -127,16 +182,19 @@ namespace FGDDumper
                 }
             }
 
+            Logging.Log($"\nLoaded '{globalPageOverrides.Count}' global page override(s).");
             foreach ((string globalOverrideClassname, EntityPage globalOverride) in globalPageOverrides)
             {
                 docsDictionary.TryGetValue(globalOverrideClassname, out var doc);
 
                 foreach (var page in doc!.Pages)
                 {
+                    Logging.Log($"Overriding page '{page.Name}' from game '{page.Game!.FileSystemName}'");
                     page.OverrideFrom(globalOverride);
                 }
             }
 
+            Logging.Log($"\nLoaded '{gameSpecificPageOverrides.Count}' game specific page override(s).");
             foreach ((string gameSpecificOverrideClassname, EntityPage gameSpecificOverride) in gameSpecificPageOverrides)
             {
                 docsDictionary.TryGetValue(gameSpecificOverrideClassname, out var doc);
@@ -145,6 +203,7 @@ namespace FGDDumper
                 {
                     if (page.Game == gameSpecificOverride.Game)
                     {
+                        Logging.Log($"Overriding page '{page.Name}' from game '{page.Game!.FileSystemName}'");
                         page.OverrideFrom(gameSpecificOverride);
                     }
                 }
@@ -153,19 +212,48 @@ namespace FGDDumper
 
         public static void DumpFGD()
         {
-            Console.WriteLine("\nDumping FGD to JSON!\n");
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Dumping FGD to JSON!"));
 
             // dictionary from entity classname -> page of that entity in every game it exists in
             var pagesDictionary = new Dictionary<string, List<EntityPage>>();
 
-            foreach (GameFinder.Game game in GameFinder.GameList)
+            var gamesList = GameFinder.GameList;
+
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Current games to dump FGD for"));
+            Logging.Log();
+
+            foreach (var game in gamesList)
             {
+                Logging.Log($"Name: '{game.Name}' | FileSystemName: '{game.FileSystemName}' | GameFolder: '{game.GameFolder}' | GameInfoFolder: '{game.PathToGameinfo}'");
+                Logging.LogS("FGDs to read:");
+                foreach (var fgd in game.FgdFilesNames)
+                {
+                    Logging.LogS($" {fgd}");
+                }
+                Logging.Log("\n");
+            }
+
+            Logging.Log(Logging.BannerTitle(string.Empty, 100));
+
+            foreach (GameFinder.Game game in gamesList)
+            {
+                Logging.Log();
+                Logging.Log(Logging.BannerTitle($"Processing game '{game.Name}'"));
+                Logging.Log();
+
                 var gamePath = GameFinder.GetSystemPathForGame(game);
 
                 if (string.IsNullOrEmpty(gamePath))
                 {
+                    Logging.Log($"Failed to find game '{game.Name}' on this machine! skipping dumping for this game.", ConsoleColor.Red);
+                    Logging.Log();
                     continue;
                 }
+
+                Logging.Log("Caching VPK content for game");
+                game.CacheVPKContent();
 
                 var fileResolver = new FGDFilesResolver(RecursiveFileGetter.GetFiles(gamePath, ".fgd"));
 
@@ -176,6 +264,8 @@ namespace FGDDumper
 
                 foreach (var FGDFile in baseFGDPaths)
                 {
+                    Logging.Log($"\nProcessing FGD file: {FGDFile}");
+
                     using var stream = File.OpenRead(FGDFile);
                     using var reader = new StreamReader(stream);
 
@@ -183,6 +273,12 @@ namespace FGDDumper
                     FGDs.Add(fgdFormatter.Read(reader));
                 }
 
+                var validEntityCount = 0;
+
+                if (Logging.Verbose)
+                {
+                    Logging.Log($"\nProcessing entities into entity pages:\n");
+                }
                 foreach (var fgd in FGDs)
                 {
                     foreach (var Class in fgd.Classes)
@@ -191,6 +287,13 @@ namespace FGDDumper
 
                         if (page is not null)
                         {
+                            validEntityCount++;
+
+                            if (Logging.Verbose)
+                            {
+                                Logging.Log($"{page.Name}");
+                            }
+
                             if (pagesDictionary.ContainsKey(page.Name))
                             {
                                 pagesDictionary[page.Name].Add(page);
@@ -202,11 +305,29 @@ namespace FGDDumper
                         }
                     }
                 }
+
+                Logging.Log($"\nTotal amount of valid entities found: {validEntityCount}");
+
+                Logging.Log($"\nFinished processing {FGDs.Count} FGD file(s)");
+                Logging.Log();
             }
 
+            Logging.Log();
+            Logging.Log(Logging.BannerTitle("Processing entities into JSON and exporting!"));
+            Logging.Log();
             foreach ((string pageName, List<EntityPage> pages) in pagesDictionary)
             {
                 var doc = EntityDocument.GetDocument(pageName, pages);
+
+                if (Logging.Verbose)
+                {
+                    Logging.Log();
+                    Logging.Log(Logging.BannerTitle($"Generating document {doc.Name} from pages:", 70));
+                    foreach (var page in doc.Pages)
+                    {
+                        Logging.Log($"Page: '{page.Name}', from game: '{page.Game!.FileSystemName}'");
+                    }
+                }
 
                 Directory.CreateDirectory(EntityPageTools.RootDumpFolder);
                 var docPath = Path.Combine(EntityPageTools.RootDumpFolder, $"{doc.Name}.json");
@@ -215,6 +336,10 @@ namespace FGDDumper
                 {
                     if (!string.IsNullOrEmpty(page.IconPath))
                     {
+                        if (Logging.Verbose)
+                        {
+                            Logging.Log($"\nPage has entity icon path '{page.IconPath}' , attempting to dump icon image:");
+                        }
                         string iconPath = string.Empty;
                         if (page.IconPath.Contains("materials/"))
                         {
@@ -244,21 +369,44 @@ namespace FGDDumper
 
                             var iconTexture = page.Game.LoadVPKFileCompiled(iconTexturePath);
 
+                            if (Logging.Verbose)
+                            {
+                                Logging.Log($"Read '{iconTexture!.FileName}', extracting:");
+                            }
                             TextureContentFile textureExtract = (TextureContentFile)new TextureExtract(iconTexture).ToContentFile();
                             using var bitmap = textureExtract.Bitmap;
                             using var data = bitmap.Encode(SkiaSharp.SKEncodedImageFormat.Png, 100);
 
                             page.IconPath = page.GetImageRelativePath();
                             Directory.CreateDirectory(Path.Combine(EntityPageTools.WikiRoot, page.GetImageRelativeFolder()));
-                            using var stream = File.OpenWrite(Path.Combine(EntityPageTools.WikiRoot, page.IconPath));
+                            var finalIconPath = Path.Combine(EntityPageTools.WikiRoot, page.IconPath);
+                            using var stream = File.OpenWrite(finalIconPath);
                             data.SaveTo(stream);
+                            if (Logging.Verbose)
+                            {
+                                Logging.Log($"Saved icon texture to '{finalIconPath}'!");
+                            }
+                        }
+                        else
+                        {
+                            if (Logging.Verbose)
+                            {
+                                Logging.Log($"Failed to load entity icon material '{iconPath}'", ConsoleColor.Red);
+                            }
                         }
                     }
                 }
 
                 var jsonText = JsonSerializer.Serialize(doc, JsonContext.Default.EntityDocument);
                 File.WriteAllText(docPath, jsonText);
+
+                if (Logging.Verbose)
+                {
+                    Logging.Log($"\nSaved document JSON to {docPath}!");
+                }
             }
+
+            Logging.Log($"\nProcessed and exported {pagesDictionary.Count} documents!");
         }
 
         private static string? GetMaterialColorTexture(Material material)
@@ -289,18 +437,19 @@ namespace FGDDumper
             return string.Empty;
         }
 
-        private static void WriteFileIfContentsChanged(string path, string? contents)
+        private static bool WriteFileIfContentsChanged(string path, string? contents)
         {
             if (File.Exists(path))
             {
                 var oldFileText = File.ReadAllText(path);
                 if (oldFileText == contents)
                 {
-                    return;
+                    return false;
                 }
             }
 
             File.WriteAllText(path, contents);
+            return true;
         }
     }
 

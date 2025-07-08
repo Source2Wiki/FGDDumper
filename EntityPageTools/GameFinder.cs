@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using EntityPageTools;
 using Microsoft.Win32;
 using SteamDatabase.ValvePak;
 using ValveResourceFormat;
@@ -20,20 +21,21 @@ namespace FGDDumper
                 throw new IOException("Failed to find Steam on this machine!");
             }
 
-            Console.WriteLine();
-            Console.WriteLine($"Steam path: {SteamPath}");
-            Console.WriteLine();
-            Console.WriteLine("Getting steam libraries!");
-            Console.WriteLine();
+            Logging.Log();
+            Logging.Log($"Steam path: {SteamPath}");
+            Logging.Log();
+            Logging.Log("Getting steam libraries!");
+            Logging.Log();
 
             SteamLibraryPaths = GetSteamLibraries(SteamPath);
 
-            Console.WriteLine("Steam libraries:");
+            Logging.Log("Steam libraries:");
 
             foreach (var lib in SteamLibraryPaths)
             {
-                Console.WriteLine(lib);
+                Logging.Log(lib);
             }
+
         }
 
         private const string GameInfo = "gameinfo.gi";
@@ -50,8 +52,14 @@ namespace FGDDumper
 
             private List<GameFileLoader> GameFileLoaders = [];
             private bool CachedGameFileLoaders = false;
-            public Resource? LoadVPKFileCompiled(string filePath)
+
+            public void CacheVPKContent()
             {
+                if (string.IsNullOrEmpty(GetSystemPathForGame(this)))
+                {
+                    return;
+                }
+
                 if (!CachedGameFileLoaders)
                 {
                     CachedGameFileLoaders = true;
@@ -66,6 +74,12 @@ namespace FGDDumper
                         GameFileLoaders.Add(new GameFileLoader(package, package.FileName));
                     }
                 }
+
+            }
+
+            public Resource? LoadVPKFileCompiled(string filePath)
+            {
+                CacheVPKContent();
 
                 foreach (var loader in GameFileLoaders)
                 {
@@ -210,7 +224,6 @@ namespace FGDDumper
                 }
             }
 
-            Console.WriteLine($"Failed to find game '{game.Name}' on this machine! skipping dumping for this game.");
             return string.Empty;
         }
     }

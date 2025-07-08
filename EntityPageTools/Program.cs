@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System.Text;
 using ConsoleAppFramework;
+using EntityPageTools;
 using FileWatcherEx;
 
 namespace FGDDumper
@@ -30,7 +31,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:\\Dev\\Source2Wiki", "--dump_fgd"];
+            args = ["--root", "D:\\Dev\\Source2Wiki", "--generate_mdx"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -58,30 +59,36 @@ namespace FGDDumper
         /// <param name="dump_fgd">Attempts to find all source2 games on the system and generate json dumps of their FGDs, 
         /// the dumps get saved into \fgd_dump, you usually want to run this program with --generate_mdx after
         /// to generate the actual wiki pages.</param>
-        public static int Run(string root, bool generate_mdx, bool dump_fgd)
+        /// <param name="verbose">Enables extra logging which might otherwise be too annoying.</param>
+        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose)
         {
             if (string.IsNullOrEmpty(root))
             {
-                Console.WriteLine("Docs output path can't be empty");
+                Logging.Log("Docs output path can't be empty");
                 return 1;
             }
 
             if (File.Exists(root))
             {
-                Console.WriteLine("Docs output path can't be a file, it must be a folder");
+                Logging.Log("Docs output path can't be a file, it must be a folder");
                 return 1;
             }
 
             if (!Directory.Exists(Path.Combine(root, ".docusaurus")))
             {
-                Console.WriteLine("Selected folder is not a docusaurus project, this should be the folder containing the .docusaurus folder");
+                Logging.Log("Selected folder is not a docusaurus project, this should be the folder containing the .docusaurus folder");
                 return 1;
             }
 
             if (!dump_fgd && !generate_mdx)
             {
-                Console.WriteLine("At least one mode argument must be provided!");
+                Logging.Log("At least one mode argument must be provided!");
                 return 1;
+            }
+
+            if(verbose)
+            {
+                Logging.Verbose = true;
             }
 
             WikiRoot = root;
@@ -91,8 +98,7 @@ namespace FGDDumper
             RootDumpFolder = Path.Combine(WikiRoot, DumpFolder);
             RootOverridesFolder = Path.Combine(WikiRoot, OverridesFolder);
 
-
-            Console.WriteLine("Starting...");
+            Logging.Log("Starting...");
 
             if (dump_fgd)
             {
@@ -107,23 +113,24 @@ namespace FGDDumper
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"\nFailed to update MDX files, error: \n{ex.Message}");
+                    Logging.Log($"\nFailed to update MDX files, error: \n{ex.Message}");
                 }
 
                 var fileWatcher = new FileSystemWatcherEx(RootOverridesFolder);
 
-                Console.WriteLine($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
+                Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
                 fileWatcher.OnChanged += (object? sender, FileChangedEvent e) =>
                 {
 
-                    Console.WriteLine($"File '{e.FullPath}' changed, updating MDX.");
+                    Logging.Log($"\nFile '{e.FullPath}' changed, updating MDX.");
                     try
                     {
                         WikiFilesGenerator.GenerateMDXFromJSONDump();
+                        Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"\nFailed to live update {e.FullPath}, error: \n{ex.Message}");
+                        Logging.Log($"\nFailed to live update {e.FullPath}, error: \n{ex.Message}");
                     }
                 };
 
