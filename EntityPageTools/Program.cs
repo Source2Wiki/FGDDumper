@@ -30,7 +30,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "C:\\LOCAL\\Git\\Source2Wiki", "--generate_mdx"];
+            args = ["--root", "D:\\Dev\\Source2Wiki", "--dump_fgd"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -55,10 +55,10 @@ namespace FGDDumper
         /// </summary>
         /// <param name="root">Folder path for the root of the docusaurus project.</param>
         /// <param name="generate_mdx">Generates the wiki files from the json in \fgd_dump, takes into account the manual overrides from \fgd_dump_overrides.</param>
-        /// <param name="dump_json">Attempts to find all source2 games on the system and generate json dumps of their FGDs, 
+        /// <param name="dump_fgd">Attempts to find all source2 games on the system and generate json dumps of their FGDs, 
         /// the dumps get saved into \fgd_dump, you usually want to run this program with --generate_mdx after
         /// to generate the actual wiki pages.</param>
-        public static int Run(string root, bool generate_mdx, bool dump_json)
+        public static int Run(string root, bool generate_mdx, bool dump_fgd)
         {
             if (string.IsNullOrEmpty(root))
             {
@@ -78,7 +78,7 @@ namespace FGDDumper
                 return 1;
             }
 
-            if (!dump_json && !generate_mdx)
+            if (!dump_fgd && !generate_mdx)
             {
                 Console.WriteLine("At least one mode argument must be provided!");
                 return 1;
@@ -94,7 +94,7 @@ namespace FGDDumper
 
             Console.WriteLine("Starting...");
 
-            if (dump_json)
+            if (dump_fgd)
             {
                 WikiFilesGenerator.DumpFGD();
             }
