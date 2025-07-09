@@ -11,7 +11,7 @@ namespace FGDDumper
     {
         public required Game? Game { get; set; }
         public required EntityTypeEnum EntityType { get; set; }
-        public string Name { get; init; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string IconPath { get; set; } = string.Empty;
         public List<Property> Properties { get; set; } = [];
@@ -134,6 +134,11 @@ namespace FGDDumper
             if (overridePage.EntityType != EntityTypeEnum.Default)
             {
                 EntityType = overridePage.EntityType;
+            }
+
+            if (!string.IsNullOrEmpty(overridePage.Name))
+            {
+                Name = overridePage.Name;
             }
 
             if (!string.IsNullOrEmpty(overridePage.Description))
@@ -316,21 +321,21 @@ namespace FGDDumper
                     propertyString += $"\\\n{Description}";
                 }
 
+                foreach (var annotation in Annotations)
+                {
+                    propertyString += $"\n{annotation.GetMDXText()}";
+                }
+
                 var options = string.Empty;
 
                 foreach (var option in Options)
                 {
-                    options += $"  - {option.Name} {option.Description}\n";
+                    options += $"  - {option.Name}\\\n    {option.Description}\n";
                 }
 
                 if (!string.IsNullOrEmpty(options))
                 {
                     propertyString += "\n" + options;
-                }
-
-                foreach (var annotation in Annotations)
-                {
-                    propertyString += $"\n{annotation.GetMDXText()}";
                 }
 
                 propertyString += "\n\n";
