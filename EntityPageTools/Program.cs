@@ -10,7 +10,7 @@ namespace FGDDumper
 {
     public static class EntityPageTools
     {
-        private const string Version = "1.0.2";
+        private const string Version = "1.0.3";
 
         public static string WikiRoot { get; private set; } = string.Empty;
 
@@ -119,21 +119,9 @@ namespace FGDDumper
                 var fileWatcher = new FileSystemWatcherEx(RootOverridesFolder);
 
                 Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
-                fileWatcher.OnChanged += (object? sender, FileChangedEvent e) =>
-                {
-
-                    Logging.Log($"\nFile '{e.FullPath}' changed, updating MDX.");
-                    try
-                    {
-                        WikiFilesGenerator.GenerateMDXFromJSONDump();
-                        Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
-                    }
-                    catch (Exception ex)
-                    {
-                        Logging.Log($"\nFailed to live update {e.FullPath}, error: \n{ex.Message}");
-                    }
-                };
-
+                fileWatcher.OnChanged += UpdateMDX;
+                fileWatcher.OnCreated += UpdateMDX;
+                fileWatcher.OnRenamed += UpdateMDX;
 
                 fileWatcher.Start();
 
@@ -143,6 +131,20 @@ namespace FGDDumper
             }
 
             return 0;
+        }
+
+        private static void UpdateMDX(object? sender, FileChangedEvent e)
+        {
+            Logging.Log($"\nFile '{e.FullPath}' changed, updating MDX.");
+            try
+            {
+                WikiFilesGenerator.GenerateMDXFromJSONDump();
+                Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
+            }
+            catch (Exception ex)
+            {
+                Logging.Log($"\nFailed to live update {e.FullPath}, error: \n{ex.Message}");
+            }
         }
     }
 }

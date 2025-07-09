@@ -330,7 +330,16 @@ namespace FGDDumper
 
                 foreach (var option in Options)
                 {
-                    options += $"  - {option.Name}\\\n    {option.Description}\n";
+                    options += $"  - {option.Name}";
+
+                    if(!string.IsNullOrEmpty(option.Description))
+                    {
+                        options += $"\\\n    {option.Description}\n";
+                    }
+                    else
+                    {
+                        options += "\n";
+                    }
                 }
 
                 if (!string.IsNullOrEmpty(options))
