@@ -10,7 +10,7 @@ namespace FGDDumper
 {
     public static class EntityPageTools
     {
-        private const string Version = "1.0.1";
+        private const string Version = "1.0.2";
 
         public static string WikiRoot { get; private set; } = string.Empty;
 
@@ -86,7 +86,7 @@ namespace FGDDumper
                 return 1;
             }
 
-            if(verbose)
+            if (verbose)
             {
                 Logging.Verbose = true;
             }

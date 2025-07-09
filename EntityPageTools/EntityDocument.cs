@@ -16,10 +16,15 @@ namespace FGDDumper
                 tabImports += $"import {page.Game!.FileSystemName.ToUpper()}Page from '@site/src/pages/Entities/{page.GetPageRelativePath()}';\n";
 
                 tabs +=
-                $"""
+                $$"""
 
-                <TabItem value="{page.Game.FileSystemName}" label="{page.Game.Name}">
-                    <{page.Game.FileSystemName.ToUpper()}Page />
+                <TabItem value="{{page.Game.FileSystemName}}" label={
+                    <span>
+                        <img src="/img/{{page.Game.FileSystemName}}_icon.png" alt="{{page.Game.Name}}" className="tab-icon" />
+                        {{page.Game.Name}}
+                    </span>
+                    }>
+                    <{{page.Game.FileSystemName.ToUpper()}}Page />
                 </TabItem>
 
                 """;
@@ -42,7 +47,8 @@ namespace FGDDumper
             
             import Tabs from '@theme/Tabs';
             import TabItem from '@theme/TabItem';
-
+            import '@site/src/css/tabs.css';
+            
             # {Name}
 
             {tabImports}
