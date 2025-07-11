@@ -14,13 +14,14 @@ namespace FGDDumper
             {
                 // i shouldnt have to wonder why this needs .ToUpper() to render the page in the tab, yet here we are!
                 tabImports += $"import {page.Game!.FileSystemName.ToUpper()}Page from '@site/src/pages/Entities/{page.GetPageRelativePath()}';\n";
+                tabImports += $"import {page.Game.FileSystemName}Icon from '@site/static/img/{page.Game.FileSystemName}_icon.png';\n";
 
                 tabs +=
                 $$"""
 
                 <TabItem value="{{page.Game.FileSystemName}}" label={
                     <span>
-                        <img src="/img/{{page.Game.FileSystemName}}_icon.png" alt="{{page.Game.Name}}" className="tab-icon" />
+                        <img src={{{page.Game.FileSystemName}}Icon} alt="{{page.Game.Name}}" className="tab-icon" />
                         {{page.Game.Name}}
                     </span>
                     }>
