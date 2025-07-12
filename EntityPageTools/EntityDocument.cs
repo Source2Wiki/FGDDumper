@@ -58,6 +58,12 @@ namespace FGDDumper
             
             # {Name}
 
+            {(isLegacy ? $"""
+            :::legacy
+
+            :::
+            """ : string.Empty)}
+
             {tabImports}
 
             <Tabs queryString="game">

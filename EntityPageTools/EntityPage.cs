@@ -119,7 +119,6 @@ namespace FGDDumper
             
             {iconText}
             {EntityType} Entity
-            {(Legacy ? ":::legacy :::" : string.Empty)}
             {PageAnnotation?.GetMDXText() ?? string.Empty}
             {SanitizeInput(Description)}
 
