@@ -40,8 +40,7 @@ namespace FGDDumper
             $"""   
             ---
             hide_table_of_contents: true
-            sidebar_custom_props:
-                {(isLegacy ? "legacy: true" : string.Empty)}
+            {(isLegacy ? "sidebar_class_name: legacy_item" : string.Empty)}
             ---
 
             <!---
