@@ -9,6 +9,7 @@ namespace FGDDumper
         {
             string tabImports = string.Empty;
             string tabs = string.Empty;
+            bool isLegacy = false;
 
             foreach (var page in Pages)
             {
@@ -29,12 +30,17 @@ namespace FGDDumper
                 </TabItem>
 
                 """;
+
+                // treat the document as legacy if any page has the legacy tag
+                if (page.Legacy)
+                    isLegacy = true;
             }
 
             var MD =
             $"""   
             ---
             hide_table_of_contents: true
+            {(isLegacy ? "legacy: true" : "")}
             ---
 
             <!---

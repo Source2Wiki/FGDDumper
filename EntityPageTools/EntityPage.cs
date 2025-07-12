@@ -14,6 +14,7 @@ namespace FGDDumper
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string IconPath { get; set; } = string.Empty;
+        public bool Legacy { get; set; } = false;
         public List<Property> Properties { get; set; } = [];
         public Annotation? PageAnnotation = null;
         public List<InputOutput> InputOutputs { get; set; } = [];
@@ -118,6 +119,7 @@ namespace FGDDumper
             
             {iconText}
             {EntityType} Entity
+            {(Legacy ? ":::legacy :::" : string.Empty)}
             {PageAnnotation?.GetMDXText() ?? string.Empty}
             {SanitizeInput(Description)}
 
@@ -149,6 +151,11 @@ namespace FGDDumper
             if (!string.IsNullOrEmpty(overridePage.IconPath))
             {
                 IconPath = overridePage.IconPath;
+            }
+
+            if (overridePage.Legacy)
+            {
+                Legacy = true;
             }
 
             if (overridePage.PageAnnotation != null)
@@ -247,7 +254,8 @@ namespace FGDDumper
                 tip,
                 info,
                 warning,
-                danger
+                danger,
+                legacy
             }
 
             public string Message { get; set; } = string.Empty;
@@ -332,7 +340,7 @@ namespace FGDDumper
                 {
                     options += $"  - {option.Name}";
 
-                    if(!string.IsNullOrEmpty(option.Description))
+                    if (!string.IsNullOrEmpty(option.Description))
                     {
                         options += $"\\\n    {option.Description}\n";
                     }
