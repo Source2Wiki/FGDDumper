@@ -58,11 +58,7 @@ namespace FGDDumper
             
             # {Name}
 
-            {(isLegacy ? $"""
-            :::legacy
-
-            :::
-            """ : string.Empty)}
+            {(isLegacy ? new EntityPage.Annotation { Type = EntityPage.Annotation.TypeEnum.legacy }.GetMDXText() : string.Empty)}
 
             {tabImports}
 
