@@ -10,7 +10,7 @@ namespace FGDDumper
 {
     public static class EntityPageTools
     {
-        private const string Version = "1.0.3";
+        private const string Version = "1.0.4";
 
         public static string WikiRoot { get; private set; } = string.Empty;
 
@@ -98,6 +98,7 @@ namespace FGDDumper
             RootDumpFolder = Path.Combine(WikiRoot, DumpFolder);
             RootOverridesFolder = Path.Combine(WikiRoot, OverridesFolder);
 
+            Logging.Log($"Entity Page Tools, Version {Version}.");
             Logging.Log("Starting...");
 
             if (dump_fgd)
