@@ -41,6 +41,7 @@ namespace FGDDumper
             ---
             hide_table_of_contents: true
             {(isLegacy ? "sidebar_class_name: legacy_item" : string.Empty)}
+            custom_edit_url: /entity-page-info
             ---
 
             <!---
