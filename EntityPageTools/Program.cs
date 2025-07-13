@@ -60,7 +60,8 @@ namespace FGDDumper
         /// the dumps get saved into \fgd_dump, you usually want to run this program with --generate_mdx after
         /// to generate the actual wiki pages.</param>
         /// <param name="verbose">Enables extra logging which might otherwise be too annoying.</param>
-        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose)
+        /// <param name="no_listen">Disables listening for file changes after generate_mdx and quits after first generation.</param>
+        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose, bool no_listen)
         {
             if (string.IsNullOrEmpty(root))
             {
@@ -117,17 +118,20 @@ namespace FGDDumper
                     Logging.Log($"\nFailed to update MDX files, error: \n{ex.Message}");
                 }
 
-                var fileWatcher = new FileSystemWatcherEx(RootOverridesFolder);
-
-                Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
-                fileWatcher.OnChanged += UpdateMDX;
-                fileWatcher.OnCreated += UpdateMDX;
-                fileWatcher.OnRenamed += UpdateMDX;
-
-                fileWatcher.Start();
-
-                while (Console.ReadKey().KeyChar != 'q')
+                if (!no_listen)
                 {
+                    var fileWatcher = new FileSystemWatcherEx(RootOverridesFolder);
+
+                    Logging.Log($"\nWatching for file changes in '{Path.Combine(RootOverridesFolder)}'");
+                    fileWatcher.OnChanged += UpdateMDX;
+                    fileWatcher.OnCreated += UpdateMDX;
+                    fileWatcher.OnRenamed += UpdateMDX;
+
+                    fileWatcher.Start();
+
+                    while (Console.ReadKey().KeyChar != 'q')
+                    {
+                    }
                 }
             }
 
