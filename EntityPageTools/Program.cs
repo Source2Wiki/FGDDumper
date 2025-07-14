@@ -75,20 +75,9 @@ namespace FGDDumper
                 return 1;
             }
 
-            if (!Directory.Exists(Path.Combine(root, ".docusaurus")))
+            if (!File.Exists(Path.Combine(root, "docusaurus.config.ts")))
             {
-                Logging.Log($"Selected folder is not a docusaurus project, this should be the folder containing the .docusaurus folder, root: {Path.GetFullPath(root)}");
-
-                foreach (var file in Directory.GetFiles(root))
-                {
-                    Logging.Log($"file: {file}");
-                }
-
-                foreach (var dir in Directory.GetDirectories(root))
-                {
-                    Logging.Log($"dir: {dir}");
-                }
-
+                Logging.Log($"Selected folder is not a docusaurus project, this should be the folder containing the docusaurus.config.ts file.");
                 return 1;
             }
 
