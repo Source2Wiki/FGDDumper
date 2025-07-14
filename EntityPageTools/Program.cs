@@ -77,7 +77,7 @@ namespace FGDDumper
 
             if (!Directory.Exists(Path.Combine(root, ".docusaurus")))
             {
-                Logging.Log("Selected folder is not a docusaurus project, this should be the folder containing the .docusaurus folder");
+                Logging.Log($"Selected folder is not a docusaurus project, this should be the folder containing the .docusaurus folder, root: {root}");
                 return 1;
             }
 
