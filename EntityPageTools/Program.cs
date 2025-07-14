@@ -84,6 +84,11 @@ namespace FGDDumper
                     Logging.Log($"file: {file}");
                 }
 
+                foreach (var dir in Directory.GetDirectories(root))
+                {
+                    Logging.Log($"dir: {dir}");
+                }
+
                 return 1;
             }
 
