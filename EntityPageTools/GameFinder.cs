@@ -14,7 +14,13 @@ namespace FGDDumper
 
         static GameFinder()
         {
-            SteamPath = GetSteamInstallPath()!;
+            try
+            {
+                SteamPath = GetSteamInstallPath()!;
+            }
+            catch (Exception)
+            {
+            }
 
             if (string.IsNullOrEmpty(SteamPath))
             {
