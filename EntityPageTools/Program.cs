@@ -14,10 +14,10 @@ namespace FGDDumper
 
         public static string WikiRoot { get; private set; } = string.Empty;
 
-        public const string DocsFolder = "docs\\Entities";
+        public const string DocsFolder = "docs/Entities";
         public static string RootDocsFolder { get; private set; } = string.Empty;
 
-        public const string PagesFolder = "src\\pages\\Entities";
+        public const string PagesFolder = "src/pages/Entities";
         public static string RootPagesFolder { get; private set; } = string.Empty;
 
         public const string DumpFolder = "fgd_dump";
@@ -31,7 +31,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:\\Dev\\Source2Wiki", "--generate_mdx"];
+            args = ["--root", "D:/Dev/Source2Wiki", "--generate_mdx"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
