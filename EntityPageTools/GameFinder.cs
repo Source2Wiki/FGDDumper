@@ -9,7 +9,7 @@ namespace FGDDumper
 {
     public static class GameFinder
     {
-        public static string SteamPath { get; }
+        public static string? SteamPath { get; }
         public static List<string> SteamLibraryPaths { get; } = [];
 
         static GameFinder()
@@ -18,7 +18,8 @@ namespace FGDDumper
 
             if (string.IsNullOrEmpty(SteamPath))
             {
-                throw new IOException("Failed to find Steam on this machine!");
+                Logging.Log("Failed to find Steam on this machine! dumping FGD is disabled.", ConsoleColor.Red);
+                return;
             }
 
             Logging.Log();
