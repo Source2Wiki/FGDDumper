@@ -15,19 +15,10 @@ namespace FGDDumper
             {
                 // i shouldnt have to wonder why this needs .ToUpper() to render the page in the tab, yet here we are!
                 tabImports += $"import {page.Game!.FileSystemName.ToUpper()}Page from '@site/src/pages/Entities/{page.GetPageRelativePath()}';\n";
-                tabImports += $"import {page.Game.FileSystemName}Icon from '@site/static/img/{page.Game.FileSystemName}_icon.png';\n";
 
                 tabs +=
                 $$"""
-
-                <TabItem value="{{page.Game.FileSystemName}}" label={
-                    <span>
-                        <img src={{{page.Game.FileSystemName}}Icon} alt="{{page.Game.Name}}" className="tab-icon" />
-                        {{page.Game.Name}}
-                    </span>
-                    }>
-                    <{{page.Game.FileSystemName.ToUpper()}}Page />
-                </TabItem>
+                    {{page.Game.FileSystemName}} = {<{{page.Game.FileSystemName.ToUpper()}}Page/>}
 
                 """;
 
@@ -53,8 +44,7 @@ namespace FGDDumper
             In order to make edits, you can make an annotation file in /fgd_dump_overrides
             -->
             
-            import Tabs from '@theme/Tabs';
-            import TabItem from '@theme/TabItem';
+            import GameTabs from '@site/src/components/GameTabs'
             import '@site/src/css/tabs.css';
             
             # {Name}
@@ -63,9 +53,9 @@ namespace FGDDumper
 
             {tabImports}
 
-            <Tabs queryString="game">
-                {tabs}
-            </Tabs>
+            <GameTabs
+            {tabs}
+            />
             
             """;
 
