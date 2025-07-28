@@ -31,7 +31,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:/Dev/Source2Wiki", "--generate_mdx"];
+            args = ["--root", "D:/Dev/Source2Wiki", "--dump_fgd"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;

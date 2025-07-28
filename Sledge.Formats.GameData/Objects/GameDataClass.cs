@@ -37,6 +37,7 @@ namespace Sledge.Formats.GameData.Objects
             {
                 if(ClassType == ClassType.OverrideClass)
                 {
+                    ClassType = gdo.ClassType;
                     Description = gdo.Description;
                 }
 
