@@ -435,7 +435,7 @@ namespace FGDDumper
 
         public static EntityPage? GetEntityPage(GameDataClass Class, Game game)
         {
-            // dont want base classes only, users dont care about these
+            // we want base classes only, users dont care about these
             if (Class.ClassType == ClassType.BaseClass || Class.ClassType == ClassType.OverrideClass)
             {
                 return null;
