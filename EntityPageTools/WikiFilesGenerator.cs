@@ -281,8 +281,6 @@ namespace FGDDumper
                 }
                 foreach (var fgd in FGDs)
                 {
-                    fgd.CreateDependencies();
-
                     foreach (var Class in fgd.Classes)
                     {
                         var page = EntityPage.GetEntityPage(Class, game);
