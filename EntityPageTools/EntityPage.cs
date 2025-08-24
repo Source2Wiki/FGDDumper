@@ -14,6 +14,7 @@ namespace FGDDumper
         public string Name { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string IconPath { get; set; } = string.Empty;
+        public bool NonFGD { get; set; } = false;
         public bool Legacy { get; set; } = false;
         public List<Property> Properties { get; set; } = [];
         public Annotation? PageAnnotation = null;
@@ -157,6 +158,11 @@ namespace FGDDumper
                 Legacy = true;
             }
 
+            if (overridePage.NonFGD)
+            {
+                NonFGD = true;
+            }
+
             if (overridePage.PageAnnotation != null)
             {
                 PageAnnotation = overridePage.PageAnnotation;
@@ -254,7 +260,8 @@ namespace FGDDumper
                 info,
                 warning,
                 danger,
-                legacy
+                legacy,
+                nonFGD
             }
 
             public string Message { get; set; } = string.Empty;
@@ -431,6 +438,24 @@ namespace FGDDumper
         public string GetPageRelativePath()
         {
             return $"{Name}-{Game!.FileSystemName}.mdx";
+        }
+
+        public static EntityPage GetEntityPageFromJson(string filePath)
+        {
+            var text = File.ReadAllText(filePath);
+
+            if (string.IsNullOrEmpty(text))
+            {
+                throw new InvalidDataException($"JSON file has empty content! {filePath}");
+            }
+
+            var entityPage = JsonSerializer.Deserialize(text, JsonContext.Default.EntityPage);
+            if (entityPage == null)
+            {
+                throw new InvalidOperationException("Failed to deserialise entity page from JSON!");
+            }
+
+            return entityPage;
         }
 
         public static EntityPage? GetEntityPage(GameDataClass Class, Game game)

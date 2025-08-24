@@ -46,7 +46,7 @@ namespace FGDDumper
 
             Logging.Log();
             Logging.Log(Logging.BannerTitle("Handling page overrides!"));
-            HandleOverrides(overrides, docsDictionary);
+            HandleOverrides(overrides, ref docsDictionary);
 
             Directory.CreateDirectory(EntityPageTools.RootDocsFolder);
 
@@ -110,7 +110,7 @@ namespace FGDDumper
         // the format for overrides filename is 'entityClassname'-'gameFileSystemName'.json or just 'entityClassname'.json
         // if only entityClassname is provided, we treat the override as being global
         // global overrides get processed first, then game specific ones
-        public static void HandleOverrides(string[] files, Dictionary<string, EntityDocument> docsDictionary)
+        public static void HandleOverrides(string[] files, ref Dictionary<string, EntityDocument> docsDictionary)
         {
             List<(string classname, EntityPage)> globalPageOverrides = [];
             List<(string classname, EntityPage)> gameSpecificPageOverrides = [];
@@ -124,59 +124,91 @@ namespace FGDDumper
 
                 var fileName = Path.GetFileNameWithoutExtension(file);
                 var splitFilename = fileName.Split("-");
-                if (splitFilename.Length > 2)
-                {
-                    throw new InvalidDataException("Invalid override entity filename! correct format is {entityClassname}.json or {entityClassname}-{gameFileSystemName}.json\n");
-                }
+                //if (splitFilename.Length > 2)
+                //{
+                //    throw new InvalidDataException("Invalid override entity filename! correct format is {entityClassname}.json or {entityClassname}-{gameFileSystemName}.json\n");
+                //}
 
                 var entityClass = splitFilename[0];
-                GameFinder.Game? entityGame = null;
+                List<GameFinder.Game> entityGames = [];
 
                 docsDictionary.TryGetValue(entityClass, out EntityDocument? docToOverride);
 
-                if (docToOverride == null)
+                if (splitFilename.Length >= 2)
                 {
-                    throw new InvalidDataException($"Invalid override entity class, could not match any entity to '{entityClass}'!\n");
-                }
-
-                if (splitFilename.Length == 2)
-                {
-                    var gameString = splitFilename[1];
-                    entityGame = GameFinder.GetGameByFileSystemName(gameString);
-
-                    if (entityGame == null)
+                    for (int i = 1; i < splitFilename.Length; i++)
                     {
-                        var error = $"Invalid override entity game '{gameString}'! valid game names are: \n\n";
+                        var gameString = splitFilename[i];
+                        var game = GameFinder.GetGameByFileSystemName(gameString);
 
-                        foreach (var game in GameFinder.GameList)
+                        if (game == null)
                         {
-                            error += $"{game.FileSystemName}\n";
+                            var error = $"Invalid override entity game '{gameString}'! valid game names are: \n\n";
+
+                            foreach (var gameListGame in GameFinder.GameList)
+                            {
+                                error += $"{gameListGame.FileSystemName}\n";
+                            }
+
+                            error += "\nIn case you meant to make this a global override for all games, simply remove the - at the end, and make the filename be {entityClassname}.json\n";
+                            throw new InvalidDataException(error);
                         }
 
-                        error += "\nIn case you meant to make this a global override for all games, simply remove the - at the end, and make the filename be {entityClassname}.json\n";
-                        throw new InvalidDataException(error);
+                        entityGames.Add(game);
                     }
                 }
 
-                if (entityGame == null)
+                if (docToOverride == null)
                 {
-                    var text = File.ReadAllText(file);
-                    if (string.IsNullOrEmpty(text))
+                    Logging.Log($"Could not match any entity to '{entityClass}' override, adding as non-FGD entity!");
+
+                    var nonFGDDoc = new EntityDocument { Name = entityClass };
+                    docsDictionary.Add(entityClass, nonFGDDoc);
+
+                    // add the same page to all games if no games are specificed
+                    if (entityGames.Count == 0)
                     {
-                        throw new InvalidDataException($"JSON file has empty content! {file}");
+                        foreach (var gameDef in GameFinder.GameList)
+                        {
+                            var overrideEntitypage = EntityPage.GetEntityPageFromJson(file);
+                            overrideEntitypage.NonFGD = true;
+                            overrideEntitypage.Game = gameDef;
+                            nonFGDDoc.Pages.Add(overrideEntitypage);
+                        }
                     }
-                    var overrideEntitypage = JsonSerializer.Deserialize(text, JsonContext.Default.EntityPage);
-                    globalPageOverrides.Add((entityClass, overrideEntitypage!));
+                    else
+                    {
+                        foreach (var gameDef in entityGames)
+                        {
+                            var overrideEntitypage = EntityPage.GetEntityPageFromJson(file);
+                            overrideEntitypage.NonFGD = true;
+                            overrideEntitypage.Game = gameDef;
+                            nonFGDDoc.Pages.Add(overrideEntitypage);
+                        }
+                    }
+
+                    continue;
+                }
+
+                if (entityGames.Count == 0)
+                {
+                    var overrideEntitypage = EntityPage.GetEntityPageFromJson(file);
+
+                    globalPageOverrides.Add((entityClass, overrideEntitypage));
                 }
                 else
                 {
                     foreach (var page in docToOverride.Pages)
                     {
-                        if (page.Game == entityGame)
+                        foreach (var game in entityGames)
                         {
-                            var overrideEntitypage = JsonSerializer.Deserialize(File.ReadAllText(file), JsonContext.Default.EntityPage);
-                            overrideEntitypage!.Game = entityGame;
-                            gameSpecificPageOverrides.Add((entityClass, overrideEntitypage!));
+                            if (page.Game == game)
+                            {
+                                var overrideEntitypage = EntityPage.GetEntityPageFromJson(file);
+
+                                overrideEntitypage!.Game = game;
+                                gameSpecificPageOverrides.Add((entityClass, overrideEntitypage!));
+                            }
                         }
                     }
                 }

@@ -10,6 +10,9 @@ namespace FGDDumper
             string tabImports = string.Empty;
             string tabs = string.Empty;
             bool isLegacy = false;
+            bool isNonFGD = false;
+
+            string sidebarClass = "";
 
             foreach (var page in Pages)
             {
@@ -22,16 +25,29 @@ namespace FGDDumper
 
                 """;
 
+                //TODO: sidebarClass will just override right now, figure out a better way to handle this
+
                 // treat the document as legacy if any page has the legacy tag
                 if (page.Legacy)
+                {
                     isLegacy = true;
+                    sidebarClass = "legacy_item";
+                }
+
+
+                // treat the document as non FGD if any page has the non FGD tag
+                if (page.NonFGD)
+                {
+                    isNonFGD = true;
+                    sidebarClass = "nonFGD_item";
+                }
             }
 
             var MD =
             $"""   
             ---
             hide_table_of_contents: true
-            {(isLegacy ? "sidebar_class_name: legacy_item" : string.Empty)}
+            {(!string.IsNullOrEmpty(sidebarClass) ? $"sidebar_class_name: {sidebarClass}" : string.Empty)}
             custom_edit_url: /HowToEdit/entity-page-info
             ---
 
@@ -49,6 +65,7 @@ namespace FGDDumper
             
             # {Name}
 
+            {(isNonFGD ? new EntityPage.Annotation { Type = EntityPage.Annotation.TypeEnum.nonFGD }.GetMDXText() : string.Empty)}
             {(isLegacy ? new EntityPage.Annotation { Type = EntityPage.Annotation.TypeEnum.legacy }.GetMDXText() : string.Empty)}
 
             {tabImports}

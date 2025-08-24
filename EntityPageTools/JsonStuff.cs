@@ -33,6 +33,7 @@ namespace FGDDumper
                 string description = string.Empty;
                 string iconPath = string.Empty;
                 bool isLegacy = false;
+                bool nonFGD = false;
                 EntityPage.Annotation? pageAnnotation = null;
                 List<EntityPage.Property> properties = [];
                 List<EntityPage.InputOutput> inputOutputs = [];
@@ -72,6 +73,9 @@ namespace FGDDumper
                         case "Legacy":
                             isLegacy = reader.GetBoolean();
                             break;
+                        case "NonFGD":
+                            nonFGD = reader.GetBoolean();
+                            break;
                         case "PageAnnotation":
                             pageAnnotation = JsonSerializer.Deserialize(ref reader, JsonContext.Default.Annotation);
                             break;
@@ -95,6 +99,7 @@ namespace FGDDumper
                     Description = description,
                     IconPath = iconPath,
                     Legacy = isLegacy,
+                    NonFGD = nonFGD,
                     PageAnnotation = pageAnnotation,
                     Properties = properties,
                     InputOutputs = inputOutputs
@@ -114,6 +119,9 @@ namespace FGDDumper
 
                 if (value.Legacy)
                     writer.WriteBoolean("Legacy", value.Legacy);
+
+                if (value.NonFGD)
+                    writer.WriteBoolean("NonFGD", value.NonFGD);
 
                 writer.WritePropertyName("PageAnnotation");
                 JsonSerializer.Serialize(writer, value.PageAnnotation, JsonContext.Default.Annotation);
