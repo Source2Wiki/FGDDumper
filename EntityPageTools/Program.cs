@@ -31,7 +31,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:/Dev/Source2Wiki", "--generate_mdx"];
+            args = ["--root", "", "--cs_script_tablegen", "D:/cs_script_docgen.txt"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -61,8 +61,58 @@ namespace FGDDumper
         /// to generate the actual wiki pages.</param>
         /// <param name="verbose">Enables extra logging which might otherwise be too annoying.</param>
         /// <param name="no_listen">Disables listening for file changes after generate_mdx and quits after first generation.</param>
-        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose, bool no_listen)
+        /// <param name="cs_script_tablegen">converts point_script.d.ts into an mdx table</param>
+
+        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose, bool no_listen, string? cs_script_tablegen)
         {
+            //omega stupid parser built in 15 minutes because im lazy
+            if (!string.IsNullOrEmpty(cs_script_tablegen))
+            {
+                if (!File.Exists(cs_script_tablegen))
+                {
+                    return 1;
+                }
+
+                string[] allLines = File.ReadAllLines(cs_script_tablegen);
+
+                string funcDescription = "";
+                string funcSignature = "";
+                string funcName = "";
+
+                string generatedTable = "";
+
+                foreach (var line in allLines)
+                {
+                    var trimmedLine = line.Trim();
+
+                    if (!string.IsNullOrEmpty(funcDescription))
+                    {
+                        funcSignature = trimmedLine;
+                        funcName = trimmedLine.Substring(0, trimmedLine.IndexOf("("));
+
+                        generatedTable += $"|{WikiFilesGenerator.SanitizeInput(funcName)}|{WikiFilesGenerator.SanitizeInput(funcSignature)}|{WikiFilesGenerator.SanitizeInput(funcDescription)}|\n";
+
+                        funcDescription = "";
+                        funcSignature = "";
+                        funcName = "";
+                    }
+
+                    // find one line comments above function signatures
+                    // example: /** Log a message to the console. */
+                    var startIndex = trimmedLine.IndexOf("/**");
+                    var endIndex = trimmedLine.IndexOf("*/");
+
+                    if (startIndex != -1 && endIndex != -1)
+                    {
+                        // need to offset as it gives the start of the string
+                        var offsetStartIndex = startIndex + 4;
+                        funcDescription = trimmedLine.Substring(offsetStartIndex, endIndex - offsetStartIndex);
+                    }
+                }
+
+                File.WriteAllText(Path.Combine(Path.GetDirectoryName(cs_script_tablegen)!, "cs_script_doc_output.txt"), generatedTable);
+            }
+
             if (string.IsNullOrEmpty(root))
             {
                 Logging.Log("Docs output path can't be empty");

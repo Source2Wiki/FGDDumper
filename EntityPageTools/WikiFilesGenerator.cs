@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using EntityPageTools;
 using Sledge.Formats.FileSystem;
 using Sledge.Formats.GameData;
@@ -483,6 +485,47 @@ namespace FGDDumper
             File.WriteAllText(path, contents);
             return true;
         }
+
+        private static string EscapeInvalidTags(string input, string[] allowedTags)
+        {
+            var allowedPattern = string.Join("|", allowedTags.Select(Regex.Escape));
+
+            // match opening tags that are NOT in the allowed list
+            var invalidOpenTagPattern = $@"<(?!/?(?:{allowedPattern})\b)[^>]*>";
+
+            return Regex.Replace(input, invalidOpenTagPattern, match =>
+                WebUtility.HtmlEncode(match.Value), RegexOptions.IgnoreCase);
+        }
+
+        public static string SanitizeInput(string details)
+        {
+            // make this newline so stuff displays nicely
+            details = details.Replace("<br>", "\n");
+
+            // no clue what this does in hammer, seems to be nothing
+            // a lot of these are just broken so im removing them outright to avoid confusion
+            details = details.Replace("<original name>", "");
+            details = details.Replace("<Award Text>", "");
+            details = details.Replace("<picker>", "");
+            details = details.Replace("<None>", "None");
+
+            // escape any funky tags
+            var allowedTags = new[] { "b", "br", "strong" };
+            details = EscapeInvalidTags(details, allowedTags);
+            // escape unclosed tags at the end
+            details = Regex.Replace(details, @"<([^>]*)$", "&lt;$1");
+            // escape unclosed tags followed by another opening tag
+            details = Regex.Replace(details, @"<([^>]*)(?=<)", "&lt;$1");
+            // escape unmatched closing brackets at start
+            details = Regex.Replace(details, @"^([^<]*?)>", "$1&gt;");
+            // escape unmatched closing brackets after other closing brackets
+            details = Regex.Replace(details, @"(?<=>)([^<]*?)>", "$1&gt;");
+
+            details = details.Replace("{", "\\{");
+            details = details.Replace("}", "\\}");
+
+            return details;
+        }
     }
 
     public static class RecursiveFileGetter
@@ -594,4 +637,5 @@ namespace FGDDumper
             throw new NotImplementedException();
         }
     }
+
 }

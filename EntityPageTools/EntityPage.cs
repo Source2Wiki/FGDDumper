@@ -121,7 +121,7 @@ namespace FGDDumper
             {iconText}
             {EntityType} Entity
             {PageAnnotation?.GetMDXText() ?? string.Empty}
-            {SanitizeInput(Description)}
+            {WikiFilesGenerator.SanitizeInput(Description)}
 
             {propertiesString}
             {inputsString}
@@ -503,7 +503,7 @@ namespace FGDDumper
                 {
 
                     Name = inputOutput.Name,
-                    Description = SanitizeInput(inputOutput.Description),
+                    Description = WikiFilesGenerator.SanitizeInput(inputOutput.Description),
                     Type = (InputOutput.InputOutputTypeEnum)Enum.Parse(typeof(InputOutput.InputOutputTypeEnum), inputOutput.IOType.ToString()),
                     VariableType = inputOutput.VariableType
                 });
@@ -530,9 +530,9 @@ namespace FGDDumper
 
                 var newProperty = new Property
                 {
-                    FriendlyName = SanitizeInput(property.Description),
-                    InternalName = SanitizeInput(property.Name),
-                    Description = SanitizeInput(property.Details),
+                    FriendlyName = WikiFilesGenerator.SanitizeInput(property.Description),
+                    InternalName = WikiFilesGenerator.SanitizeInput(property.Name),
+                    Description = WikiFilesGenerator.SanitizeInput(property.Details),
                     VariableType = property.VariableType
                 };
 
@@ -540,8 +540,8 @@ namespace FGDDumper
                 {
                     newProperty.Options.Add(new Property.Option
                     {
-                        Name = SanitizeInput(option.Description),
-                        Description = SanitizeInput(option.Details)
+                        Name = WikiFilesGenerator.SanitizeInput(option.Description),
+                        Description = WikiFilesGenerator.SanitizeInput(option.Details)
                     });
                 }
 
@@ -551,46 +551,6 @@ namespace FGDDumper
             return entityPage;
         }
 
-        private static string EscapeInvalidTags(string input, string[] allowedTags)
-        {
-            var allowedPattern = string.Join("|", allowedTags.Select(Regex.Escape));
-
-            // match opening tags that are NOT in the allowed list
-            var invalidOpenTagPattern = $@"<(?!/?(?:{allowedPattern})\b)[^>]*>";
-
-            return Regex.Replace(input, invalidOpenTagPattern, match =>
-                WebUtility.HtmlEncode(match.Value), RegexOptions.IgnoreCase);
-        }
-
-        private static string SanitizeInput(string details)
-        {
-            // make this newline so stuff displays nicely
-            details = details.Replace("<br>", "\n");
-
-            // no clue what this does in hammer, seems to be nothing
-            // a lot of these are just broken so im removing them outright to avoid confusion
-            details = details.Replace("<original name>", "");
-            details = details.Replace("<Award Text>", "");
-            details = details.Replace("<picker>", "");
-            details = details.Replace("<None>", "None");
-
-            // escape any funky tags
-            var allowedTags = new[] { "b", "br", "strong" };
-            details = EscapeInvalidTags(details, allowedTags);
-            // escape unclosed tags at the end
-            details = Regex.Replace(details, @"<([^>]*)$", "&lt;$1");
-            // escape unclosed tags followed by another opening tag
-            details = Regex.Replace(details, @"<([^>]*)(?=<)", "&lt;$1");
-            // escape unmatched closing brackets at start
-            details = Regex.Replace(details, @"^([^<]*?)>", "$1&gt;");
-            // escape unmatched closing brackets after other closing brackets
-            details = Regex.Replace(details, @"(?<=>)([^<]*?)>", "$1&gt;");
-
-            details = details.Replace("{", "\\{");
-            details = details.Replace("}", "\\}");
-
-            return details;
-        }
 
         // really quite horrible but what can you do
         private static T CloneObject<T>(T objectToClone, JsonTypeInfo<T> jsonTypeInfo)
