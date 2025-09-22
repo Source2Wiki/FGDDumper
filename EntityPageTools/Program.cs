@@ -90,7 +90,7 @@ namespace FGDDumper
                         funcSignature = trimmedLine;
                         funcName = trimmedLine.Substring(0, trimmedLine.IndexOf("("));
 
-                        generatedTable += $"|{WikiFilesGenerator.SanitizeInput(funcName)}|{WikiFilesGenerator.SanitizeInput(funcSignature)}|{WikiFilesGenerator.SanitizeInput(funcDescription)}|\n";
+                        generatedTable += $"|{WikiFilesGenerator.SanitizeInputTable(funcName)}|{WikiFilesGenerator.SanitizeInputTable(funcSignature)}|{WikiFilesGenerator.SanitizeInputTable(funcDescription)}|\n";
 
                         funcDescription = "";
                         funcSignature = "";

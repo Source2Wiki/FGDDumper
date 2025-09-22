@@ -497,34 +497,39 @@ namespace FGDDumper
                 WebUtility.HtmlEncode(match.Value), RegexOptions.IgnoreCase);
         }
 
-        public static string SanitizeInput(string details)
+        public static string SanitizeInput(string input)
         {
             // make this newline so stuff displays nicely
-            details = details.Replace("<br>", "\n");
+            input = input.Replace("<br>", "\n");
 
             // no clue what this does in hammer, seems to be nothing
             // a lot of these are just broken so im removing them outright to avoid confusion
-            details = details.Replace("<original name>", "");
-            details = details.Replace("<Award Text>", "");
-            details = details.Replace("<picker>", "");
-            details = details.Replace("<None>", "None");
+            input = input.Replace("<original name>", "");
+            input = input.Replace("<Award Text>", "");
+            input = input.Replace("<picker>", "");
+            input = input.Replace("<None>", "None");
 
             // escape any funky tags
             var allowedTags = new[] { "b", "br", "strong" };
-            details = EscapeInvalidTags(details, allowedTags);
+            input = EscapeInvalidTags(input, allowedTags);
             // escape unclosed tags at the end
-            details = Regex.Replace(details, @"<([^>]*)$", "&lt;$1");
+            input = Regex.Replace(input, @"<([^>]*)$", "&lt;$1");
             // escape unclosed tags followed by another opening tag
-            details = Regex.Replace(details, @"<([^>]*)(?=<)", "&lt;$1");
+            input = Regex.Replace(input, @"<([^>]*)(?=<)", "&lt;$1");
             // escape unmatched closing brackets at start
-            details = Regex.Replace(details, @"^([^<]*?)>", "$1&gt;");
+            input = Regex.Replace(input, @"^([^<]*?)>", "$1&gt;");
             // escape unmatched closing brackets after other closing brackets
-            details = Regex.Replace(details, @"(?<=>)([^<]*?)>", "$1&gt;");
+            input = Regex.Replace(input, @"(?<=>)([^<]*?)>", "$1&gt;");
 
-            details = details.Replace("{", "\\{");
-            details = details.Replace("}", "\\}");
+            input = input.Replace("{", "\\{");
+            input = input.Replace("}", "\\}");
 
-            return details;
+            return input;
+        }
+
+        public static string SanitizeInputTable(string input)
+        {
+            return SanitizeInput(input).Replace("|", "\\|");
         }
     }
 
