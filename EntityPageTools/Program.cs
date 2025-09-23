@@ -85,18 +85,6 @@ namespace FGDDumper
                 {
                     var trimmedLine = line.Trim();
 
-                    if (!string.IsNullOrEmpty(funcDescription))
-                    {
-                        funcSignature = trimmedLine;
-                        funcName = trimmedLine.Substring(0, trimmedLine.IndexOf("("));
-
-                        generatedTable += $"|{WikiFilesGenerator.SanitizeInputTable(funcName)}|{WikiFilesGenerator.SanitizeInputTable(funcSignature)}|{WikiFilesGenerator.SanitizeInputTable(funcDescription)}|\n";
-
-                        funcDescription = "";
-                        funcSignature = "";
-                        funcName = "";
-                    }
-
                     // find one line comments above function signatures
                     // example: /** Log a message to the console. */
                     var startIndex = trimmedLine.IndexOf("/**");
@@ -107,6 +95,19 @@ namespace FGDDumper
                         // need to offset as it gives the start of the string
                         var offsetStartIndex = startIndex + 4;
                         funcDescription = trimmedLine.Substring(offsetStartIndex, endIndex - offsetStartIndex);
+                    }
+
+                    // find the function declaration
+                    if (trimmedLine.Contains("("))
+                    {
+                        funcSignature = trimmedLine;
+                        funcName = trimmedLine.Substring(0, trimmedLine.IndexOf("("));
+
+                        generatedTable += $"|{WikiFilesGenerator.SanitizeInputTable(funcName)}|{WikiFilesGenerator.SanitizeInputTable(funcSignature)}|{WikiFilesGenerator.SanitizeInputTable(funcDescription)}|\n";
+
+                        funcDescription = "";
+                        funcSignature = "";
+                        funcName = "";
                     }
                 }
 
