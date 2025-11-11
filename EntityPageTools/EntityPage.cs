@@ -97,8 +97,7 @@ namespace FGDDumper
 
                 if (File.Exists(Path.Combine(EntityPageTools.WikiRoot, textureImagePath)))
                 {
-                    iconText = $"\nimport {Name}Icon from '@site/{textureImagePath}';\n\n" +
-                    $"<img src={{{Name}Icon}} alt=\"{Name} icon\" style={{{{height: '80px'}}}} />\n";
+                    iconText = $"<img src={{\"/{textureImagePath.Replace("static/", "")}\"}} alt=\"{Name} icon\" style={{{{height: '80px'}}}} />\n";
                 }
 
             }
@@ -427,7 +426,7 @@ namespace FGDDumper
 
         public string GetImageRelativeFolder()
         {
-            return $"{EntityPageTools.DumpFolder}/img/{Game!.FileSystemName}";
+            return $"static/{EntityPageTools.DumpFolder}/img/{Game!.FileSystemName}";
         }
 
         public string GetImageRelativePath()

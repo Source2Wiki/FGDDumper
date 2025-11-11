@@ -1,6 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using static FGDDumper.JsonStuff;
+using static FGDDumper.WikiFilesGenerator;
 
 namespace FGDDumper
 {
@@ -12,6 +13,8 @@ namespace FGDDumper
     [JsonSerializable(typeof(EntityPage))]
     [JsonSerializable(typeof(EntityPage.Property))]
     [JsonSerializable(typeof(EntityDocument))]
+    [JsonSerializable(typeof(List<EntityIndexEntry>))]
+    [JsonSerializable(typeof(EntityIndexEntry))]
     public partial class JsonContext : JsonSerializerContext
     {
     }

@@ -12,6 +12,14 @@ namespace FGDDumper
 {
     public static class WikiFilesGenerator
     {
+        public class EntityIndexEntry
+        {
+            public string Classname { get; set; } = string.Empty;
+            public string Description { get; set; } = string.Empty;
+            public string Icon { get; set; } = string.Empty;
+            public List<string> Games { get; set; } = [];
+        }
+
         public static void GenerateMDXFromJSONDump()
         {
             Logging.Log();
@@ -60,6 +68,9 @@ namespace FGDDumper
             var skippedPages = 0;
             var wrotePages = 0;
 
+            // write index for search
+            var entityIndex = new List<EntityIndexEntry>();
+
             foreach ((string docName, EntityDocument doc) in docsDictionary)
             {
                 var docPath = Path.Combine(EntityPageTools.RootDocsFolder, $"{doc.Name}.mdx");
@@ -81,9 +92,42 @@ namespace FGDDumper
                     }
                 }
 
+                var EntityIndexEntry = new EntityIndexEntry
+                {
+                    Classname = docName,
+                };
+
+                entityIndex.Add(EntityIndexEntry);
 
                 foreach (var page in doc.Pages)
                 {
+                    if (!string.IsNullOrEmpty(page.Description) && page.Description.Length > EntityIndexEntry.Description.Length)
+                    {
+                        EntityIndexEntry.Description = SanitizeInputTable(page.Description).Replace("\n", "<br/>");
+                    }
+
+                    if (page.Game != null)
+                    {
+                        EntityIndexEntry.Games.Add(page.Game.FileSystemName);
+                    }
+
+                    if (!string.IsNullOrEmpty(page.IconPath))
+                    {
+                        if (File.Exists(Path.Combine(EntityPageTools.WikiRoot, page.GetImageRelativePath())))
+                        {
+                            EntityIndexEntry.Icon = page.GetImageRelativePath();
+                        }
+                        else if (File.Exists(Path.Combine(EntityPageTools.WikiRoot, page.IconPath)))
+                        {
+                            EntityIndexEntry.Icon = page.IconPath;
+                        }
+
+                        if (EntityIndexEntry.Icon.StartsWith("static/"))
+                        {
+                            EntityIndexEntry.Icon = EntityIndexEntry.Icon.Remove(0, 6);
+                        }
+                    }
+
                     var pagePath = Path.Combine(EntityPageTools.RootPagesFolder, page.GetPageRelativePath());
                     Directory.CreateDirectory(Path.GetDirectoryName(pagePath)!);
 
@@ -104,6 +148,10 @@ namespace FGDDumper
                     }
                 }
             }
+
+            var entityIndexJsonText = JsonSerializer.Serialize(entityIndex, JsonContext.Default.ListEntityIndexEntry);
+            File.WriteAllText(Path.Combine(EntityPageTools.WikiRoot, "static", "fgd_dump", "entityIndex.json"), entityIndexJsonText);
+
 
             Logging.Log($"\nWrote '{wroteDocs}' document(s), skipped '{skippedDocs}' document(s) with contents that did not change");
             Logging.Log($"Wrote '{wrotePages}' page(s), skipped '{skippedPages}' page(s) with contents that did not change");
@@ -175,6 +223,7 @@ namespace FGDDumper
                             var overrideEntitypage = EntityPage.GetEntityPageFromJson(file);
                             overrideEntitypage.NonFGD = true;
                             overrideEntitypage.Game = gameDef;
+                            overrideEntitypage.Name = entityClass;
                             nonFGDDoc.Pages.Add(overrideEntitypage);
                         }
                     }
@@ -185,6 +234,7 @@ namespace FGDDumper
                             var overrideEntitypage = EntityPage.GetEntityPageFromJson(file);
                             overrideEntitypage.NonFGD = true;
                             overrideEntitypage.Game = gameDef;
+                            overrideEntitypage.Name = entityClass;
                             nonFGDDoc.Pages.Add(overrideEntitypage);
                         }
                     }

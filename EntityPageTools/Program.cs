@@ -31,7 +31,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "", "--cs_script_tablegen", "D:/cs_script_docgen.txt"];
+            args = ["--root", "D:/Dev/Source2Wiki", "--generate_mdx"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -63,7 +63,7 @@ namespace FGDDumper
         /// <param name="no_listen">Disables listening for file changes after generate_mdx and quits after first generation.</param>
         /// <param name="cs_script_tablegen">converts point_script.d.ts into an mdx table</param>
 
-        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose, bool no_listen, string? cs_script_tablegen)
+        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose, bool no_listen, string? cs_script_tablegen = "")
         {
             //omega stupid parser built in 15 minutes because im lazy
             if (!string.IsNullOrEmpty(cs_script_tablegen))
