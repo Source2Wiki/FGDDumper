@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35825.156
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityPageTools", "EntityPageTools\EntityPageTools.csproj", "{F18AE455-76C2-44B3-8CAC-F2E8A6D5B7B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WikiPageTools", "WikiPageTools\WikiPageTools.csproj", "{F18AE455-76C2-44B3-8CAC-F2E8A6D5B7B6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sledge.Formats.GameData", "Sledge.Formats.GameData\Sledge.Formats.GameData.csproj", "{659D3217-53D6-708D-53D6-BB59EB3C4026}"
 EndProject

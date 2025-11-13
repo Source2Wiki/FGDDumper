@@ -161,7 +161,7 @@ namespace FGDDumper
             RootDumpFolder = Path.Combine(WikiRoot, DumpFolder);
             RootOverridesFolder = Path.Combine(WikiRoot, OverridesFolder);
 
-            Logging.Log($"Entity Page Tools, Version {Version}.");
+            Logging.Log($"Wiki Page Tools, Version {Version}.");
             Logging.Log("Starting...");
 
             if (!string.IsNullOrEmpty(entity_list_to_json))
