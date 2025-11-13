@@ -23,6 +23,8 @@ namespace FGDDumper
         public const string DumpFolder = "fgd_dump";
         public static string RootDumpFolder { get; private set; } = string.Empty;
 
+        public const string ConDumpFolder = "con_dump";
+
         public const string OverridesFolder = "fgd_dump_overrides";
         public static string RootOverridesFolder { get; private set; } = string.Empty;
 
@@ -31,7 +33,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:/Dev/Source2Wiki", "--generate_mdx"];
+            args = ["--root", "D:/Dev/Source2Wiki", "--entity_list_to_json", "D:/cvarlist_cs2.txt", "--game", "cs2"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
@@ -62,8 +64,17 @@ namespace FGDDumper
         /// <param name="verbose">Enables extra logging which might otherwise be too annoying.</param>
         /// <param name="no_listen">Disables listening for file changes after generate_mdx and quits after first generation.</param>
         /// <param name="cs_script_tablegen">converts point_script.d.ts into an mdx table</param>
-
-        public static int Run(string root, bool generate_mdx, bool dump_fgd, bool verbose, bool no_listen, string? cs_script_tablegen = "")
+        /// <param name="entity_list_to_json">converts a console var/command dump from the `cvarlist` command into a json file</param>
+        /// <param name="game">converts a console var/command dump from the `cvarlist` command into a json file</param>
+        public static int Run(
+            string root,
+            bool generate_mdx,
+            bool dump_fgd,
+            bool verbose,
+            bool no_listen,
+            string? game = "",
+            string? entity_list_to_json = "",
+            string? cs_script_tablegen = "")
         {
             //omega stupid parser built in 15 minutes because im lazy
             if (!string.IsNullOrEmpty(cs_script_tablegen))
@@ -132,7 +143,7 @@ namespace FGDDumper
                 return 1;
             }
 
-            if (!dump_fgd && !generate_mdx)
+            if (!dump_fgd && !generate_mdx && string.IsNullOrEmpty(entity_list_to_json))
             {
                 Logging.Log("At least one mode argument must be provided!");
                 return 1;
@@ -152,6 +163,36 @@ namespace FGDDumper
 
             Logging.Log($"Entity Page Tools, Version {Version}.");
             Logging.Log("Starting...");
+
+            if (!string.IsNullOrEmpty(entity_list_to_json))
+            {
+                if (string.IsNullOrEmpty(game))
+                {
+                    Logging.Log("--entity_list_to_json needs `--game` param", ConsoleColor.Red);
+                    Logging.Log(GameFinder.GetValidGames());
+                    return 1;
+                }
+
+                var gameClass = GameFinder.GetGameByFileSystemName(game);
+
+                if (gameClass == null)
+                {
+                    Logging.Log("\n--game is invalid", ConsoleColor.Red);
+                    Logging.Log(GameFinder.GetValidGames());
+                    return 1;
+                }
+
+                var json = EntityListToJson.ToJson(entity_list_to_json);
+                var path = Path.Combine(WikiRoot, ConDumpFolder);
+                var file = $"condump_{gameClass.FileSystemName}.json";
+                Directory.CreateDirectory(path);
+
+                File.WriteAllText(Path.Combine(path, file), json);
+                Logging.Log($"\nWrote condump {file} to {path}");
+
+                return 0;
+            }
+
 
             if (dump_fgd)
             {

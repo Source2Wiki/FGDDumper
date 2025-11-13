@@ -179,6 +179,17 @@ namespace FGDDumper
             return null;
         }
 
+        public static string GetValidGames()
+        {
+            var outputString = "Valid games:\n\n";
+            foreach (var game in GameList)
+            {
+                outputString += $"- {game.FileSystemName}\n";
+            }
+
+            return outputString;
+        }
+
         private static string? GetSteamInstallPath()
         {
             string? steamPath = null;
