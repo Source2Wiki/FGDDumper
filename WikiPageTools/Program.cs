@@ -33,7 +33,7 @@ namespace FGDDumper
 
 #if DEBUG
             //test args
-            args = ["--root", "D:/Dev/Source2Wiki", "--entity_list_to_json", "D:/cvarlist_cs2.txt", "--game", "cs2"];
+            args = ["--root", "D:/Dev/Source2Wiki", "--generate_mdx"];
 #endif
             CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
             CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;

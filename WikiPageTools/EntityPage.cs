@@ -297,6 +297,7 @@ namespace FGDDumper
             {
                 public string Name { get; init; } = string.Empty;
                 public string Description { get; set; } = string.Empty;
+                public string? Key { get; set; } = null;
 
                 public void OverrideFrom(Option overrideOption)
                 {
@@ -304,6 +305,12 @@ namespace FGDDumper
                     {
                         Description = overrideOption.Description;
                     }
+
+                    if (Key != null)
+                    {
+                        Key = overrideOption.Key;
+                    }
+
                 }
             }
 
@@ -344,6 +351,11 @@ namespace FGDDumper
                 foreach (var option in Options)
                 {
                     options += $"  - {option.Name}";
+
+                    if (option.Key != null)
+                    {
+                        options += $" (`{option.Key}`)";
+                    }
 
                     if (!string.IsNullOrEmpty(option.Description))
                     {
@@ -527,6 +539,11 @@ namespace FGDDumper
                     continue;
                 }
 
+                if (property.Name == "spawnflags")
+                {
+
+                }
+
                 var newProperty = new Property
                 {
                     FriendlyName = WikiFilesGenerator.SanitizeInput(property.Description),
@@ -540,7 +557,8 @@ namespace FGDDumper
                     newProperty.Options.Add(new Property.Option
                     {
                         Name = WikiFilesGenerator.SanitizeInput(option.Description),
-                        Description = WikiFilesGenerator.SanitizeInput(option.Details)
+                        Description = WikiFilesGenerator.SanitizeInput(option.Details),
+                        Key = option.Key
                     });
                 }
 
